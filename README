@@ -1,0 +1,11 @@
+Setting up Cilk
+---------------
+I downloaded the Cilk source-code from the MIT Cilk Project's page:
+http://supertech.csail.mit.edu/cilk/
+
+Then ./configure & make & make check & make install
+
+After this, write your cilk code, with three major keywords, cilk, spawn, and sync. 
+
+Compilation is similar to gcc. Use cilkc as the compiler. Eg:
+cilkc -O2 hello-world.cilk -o hello-world
