@@ -6,7 +6,7 @@ drop-caches: drop_caches.c
 	sudo chmod +x ./drop_caches
 
 merge-sort:
-	cilk++ merge_sort.cilk -o merge_sort
+	cilk++ -Wall -O2 merge_sort.cilk -o merge_sort
 
 clean:
 	rm merge_sort

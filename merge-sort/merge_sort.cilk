@@ -64,7 +64,7 @@ void pmerge(char * fptr, char * sptr,  size_t len) {
 
 int merge_sort(char * fptr, char * sptr, size_t len) {
 	//fprintf(stderr, "merge_sort(%x, %x, %d)\n", fptr, sptr, len);
-	if(len <= threshold) {
+	if(len <= (size_t)threshold) {
 		qsort(fptr, len, szrecord, cmp1);
 	}
 	else {
@@ -80,7 +80,7 @@ int merge_sort(char * fptr, char * sptr, size_t len) {
 }
 
 int cilk_main(int argc, char ** argv) {
-	char * path;
+	char * path = NULL;
 	int opt, flag_f = 0, flag_t = 0;
 	szrecord = 100;
 	
@@ -116,6 +116,7 @@ int cilk_main(int argc, char ** argv) {
 	nrecords = buf.st_size / szrecord;
 	//printf("threshold:%d szrecord: %d nrecords: %d\n", threshold, szrecord, nrecords);
 	assert(fd >= 0);
+    assert(threshold >= 0 && szrecord > 0 && nrecords >=0);
 
 	file_ptr = (char *) mmap(NULL, nrecords * szrecord, PROT_READ | \
 		PROT_WRITE, MAP_SHARED|MAP_FILE, fd, 0);
