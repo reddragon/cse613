@@ -31,8 +31,8 @@ extern "C" {
 	}
 }
 
-void pmerge(char * fptr, char * sptr,  int len) {
-    char *out = sptr;
+void pmerge(char * fptr, char * sptr,  size_t len) {
+	char *out = sptr;
 	char * s1, * e1, * s2, * e2;
 	s1 = fptr; e1 = s1 + (len/2) * szrecord;
 	s2 = e1;   e2 = fptr + len * szrecord;
@@ -62,13 +62,13 @@ void pmerge(char * fptr, char * sptr,  int len) {
 
 }
 
-int merge_sort(char * fptr, char * sptr, int len) {
+int merge_sort(char * fptr, char * sptr, size_t len) {
 	//fprintf(stderr, "merge_sort(%x, %x, %d)\n", fptr, sptr, len);
 	if(len <= threshold) {
 		qsort(fptr, len, szrecord, cmp1);
 	}
 	else {
-		int offset = szrecord * (len/2);
+		size_t offset = szrecord * (len/2);
 		cilk_spawn merge_sort(fptr, sptr, len/2);
 		merge_sort(fptr + offset, sptr + offset, len - (len/2));
 		cilk_sync;
