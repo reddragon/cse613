@@ -1,11 +1,10 @@
 Setting up Cilk
 ---------------
-I downloaded the Cilk source-code from the MIT Cilk Project's page:
-http://supertech.csail.mit.edu/cilk/
+Download the Cilk++ SDK from http://software.intel.com/en-us/articles/download-intel-cilk-sdk/
 
-Then ./configure & make & make check & make install
+The cilk++ compiler is located in the bin/ folder in the archive that you will receive.
 
-After this, write your cilk code, with three major keywords, cilk, spawn, and sync. 
+After this, write your cilk code, with three major keywords, cilk_main, cilk_spawn, and cilk_sync. 
 
-Compilation is similar to gcc. Use cilkc as the compiler. Eg:
-cilkc -O2 hello-world.cilk -o hello-world
+Compilation is similar to gcc. Use cilk++ as the compiler. Eg:
+cilk++ -O2 hello-world.cilk -o hello-world
