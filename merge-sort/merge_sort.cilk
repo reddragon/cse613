@@ -8,8 +8,8 @@
 #include <assert.h>
 
 
-#define NRECORDS 100000
-#define THRESHOLD 10000
+#define NRECORDS 1000000
+#define THRESHOLD 100000
 #define SZRECORD 100
 
 #if 0
@@ -31,38 +31,36 @@ extern "C" {
 void pmerge(char * fptr, char * sptr,  int len) {
 	int records_written = 0;
 	int part1_written = 0, part2_written = 0;
+	char * s1, * e1, * s2, * e2;
+	s1 = fptr; e1 = s1 + (len/2) * SZRECORD;
+	s2 = e1; e2 = fptr + len * SZRECORD;
 	
 	
-	while(part1_written != (len/2) && part2_written != (len - (len/2))) {
-		int c = cmp1(fptr + part1_written * SZRECORD, \
-			fptr + part2_written * SZRECORD);
+	while(s1 != e1 && s2 != e2) {
+		int c = cmp1(s1, s2);
 
-		if(c > 0)
-			memcpy(sptr + records_written++ * SZRECORD, \
-				fptr + (part2_written++) * SZRECORD, \
-				SZRECORD);
-		else
-			memcpy(sptr + records_written++ * SZRECORD, \
-				fptr + (part1_written++) * SZRECORD, \
-				SZRECORD);
+		if(c > 0) {
+			memcpy(sptr + records_written++ * SZRECORD, s2, SZRECORD);
+			s2 += SZRECORD;
+		}
+		else {
+			memcpy(sptr + records_written++ * SZRECORD, s1, SZRECORD);
+			s1 += SZRECORD;
+		}
 
 	}
 	
-	if(part1_written != (len/2)) 
-		memcpy(sptr + records_written * SZRECORD, \
-			fptr + (part1_written) * SZRECORD, \
-			(len - records_written) * SZRECORD);
+	if(s1 != e1) 
+		memcpy(sptr + records_written * SZRECORD, s1, (len - records_written) * SZRECORD);
 	
 
-	if(part2_written != (len - (len/2))) 
-		memcpy(sptr + records_written * SZRECORD, \
-			fptr + (part2_written) * SZRECORD, \
-			(len - records_written) * SZRECORD);
+	if(s2 != e2) 
+		memcpy(sptr + records_written * SZRECORD, s2, (len - records_written) * SZRECORD);
 
 }
 
 int merge_sort(char * fptr, char * sptr, int len) {
-	fprintf(stderr, "merge_sort(%x, %x, %d)\n", fptr, sptr, len);
+	//fprintf(stderr, "merge_sort(%x, %x, %d)\n", fptr, sptr, len);
 	if(len <= THRESHOLD) {
 		qsort(fptr, len, SZRECORD, cmp1);
 	}
