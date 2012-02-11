@@ -1,3 +1,5 @@
+/* -*- Mode: C++; c-basic-offset: 8; indent-tabs-mode: t -*- */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/mman.h>
@@ -8,9 +10,9 @@
 #include <assert.h>
 
 
-#define NRECORDS 1000000
-#define THRESHOLD 100000
-#define SZRECORD 100
+#define NRECORDS  1000000
+#define THRESHOLD  100000
+#define SZRECORD      100
 
 #if 0
 #define cilk_spawn 
@@ -29,33 +31,33 @@ extern "C" {
 }
 
 void pmerge(char * fptr, char * sptr,  int len) {
-	int records_written = 0;
-	int part1_written = 0, part2_written = 0;
+        char *out = sptr;
 	char * s1, * e1, * s2, * e2;
 	s1 = fptr; e1 = s1 + (len/2) * SZRECORD;
-	s2 = e1; e2 = fptr + len * SZRECORD;
-	
-	
-	while(s1 != e1 && s2 != e2) {
+	s2 = e1;   e2 = fptr + len * SZRECORD;
+
+	while (s1 != e1 && s2 != e2) {
 		int c = cmp1(s1, s2);
 
-		if(c > 0) {
-			memcpy(sptr + records_written++ * SZRECORD, s2, SZRECORD);
+		if (c > 0) {
+			memcpy(out, s2, SZRECORD);
 			s2 += SZRECORD;
 		}
 		else {
-			memcpy(sptr + records_written++ * SZRECORD, s1, SZRECORD);
+			memcpy(out, s1, SZRECORD);
 			s1 += SZRECORD;
 		}
-
+		out += SZRECORD;
 	}
-	
-	if(s1 != e1) 
-		memcpy(sptr + records_written * SZRECORD, s1, (len - records_written) * SZRECORD);
-	
 
-	if(s2 != e2) 
-		memcpy(sptr + records_written * SZRECORD, s2, (len - records_written) * SZRECORD);
+	size_t rem = sptr + (len * SZRECORD) - out;
+	if(s1 != e1) {
+		memcpy(out, s1, rem);
+	}
+
+	if(s2 != e2) {
+		memcpy(out, s2, rem);
+	}
 
 }
 
