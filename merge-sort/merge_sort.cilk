@@ -8,11 +8,12 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <assert.h>
+#include <unistd.h>
 
 
-#define NRECORDS  1000000
-#define THRESHOLD  100000
-#define SZRECORD      100
+//#define NRECORDS  1000000
+//#define THRESHOLD     100
+off_t nrecords, threshold, szrecord;
 
 #if 0
 #define cilk_spawn 
@@ -26,31 +27,31 @@ char * file_ptr, * scratch;
 
 extern "C" {
 	int cmp1(const void * r1, const void * r2) {
-		return memcmp(r1, r2, SZRECORD);
+		return memcmp(r1, r2, szrecord);
 	}
 }
 
 void pmerge(char * fptr, char * sptr,  int len) {
-        char *out = sptr;
+    char *out = sptr;
 	char * s1, * e1, * s2, * e2;
-	s1 = fptr; e1 = s1 + (len/2) * SZRECORD;
-	s2 = e1;   e2 = fptr + len * SZRECORD;
+	s1 = fptr; e1 = s1 + (len/2) * szrecord;
+	s2 = e1;   e2 = fptr + len * szrecord;
 
 	while (s1 != e1 && s2 != e2) {
 		int c = cmp1(s1, s2);
 
 		if (c > 0) {
-			memcpy(out, s2, SZRECORD);
-			s2 += SZRECORD;
+			memcpy(out, s2, szrecord);
+			s2 += szrecord;
 		}
 		else {
-			memcpy(out, s1, SZRECORD);
-			s1 += SZRECORD;
+			memcpy(out, s1, szrecord);
+			s1 += szrecord;
 		}
-		out += SZRECORD;
+		out += szrecord;
 	}
 
-	size_t rem = sptr + (len * SZRECORD) - out;
+	size_t rem = sptr + (len * szrecord) - out;
 	if(s1 != e1) {
 		memcpy(out, s1, rem);
 	}
@@ -63,31 +64,60 @@ void pmerge(char * fptr, char * sptr,  int len) {
 
 int merge_sort(char * fptr, char * sptr, int len) {
 	//fprintf(stderr, "merge_sort(%x, %x, %d)\n", fptr, sptr, len);
-	if(len <= THRESHOLD) {
-		qsort(fptr, len, SZRECORD, cmp1);
+	if(len <= threshold) {
+		qsort(fptr, len, szrecord, cmp1);
 	}
 	else {
-		int offset = SZRECORD * len/2;
+		int offset = szrecord * (len/2);
 		cilk_spawn merge_sort(fptr, sptr, len/2);
 		merge_sort(fptr + offset, sptr + offset, len - (len/2));
 		cilk_sync;
 		pmerge(fptr, sptr, len);
-		memcpy(fptr, sptr, len * SZRECORD);
+		memcpy(fptr, sptr, len * szrecord);
 	}
 
 	return 0;
 }
 
 int cilk_main(int argc, char ** argv) {
+    char * path;
+    int opt, flag_f = 0, flag_t = 0;
+    szrecord = 100;
 
-	if(argc != 2) {
-		printf("Inappropriate arguments");
-		return 1;
-	}
-	
-	int fd = open(argv[1], O_RDWR);
-	assert(fd >= 0);
-	file_ptr = (char *) mmap(NULL, NRECORDS * SZRECORD, PROT_READ | \
+    while((opt = getopt(argc, argv, "f:t:")) != -1) {
+        switch(opt) {
+            case 'f': path = optarg;
+                      flag_f = 1;  
+                      break;
+            case 't': threshold = (off_t)(atoi(optarg)); // TODO: Fix me. Use atoll
+                      flag_t = 1;
+                      break;
+
+            default:
+                    fprintf(stderr, "Usage: %s [-f filepath] [-t threshold]\n",
+                        argv[0]);
+                    exit(EXIT_FAILURE);
+        }
+    }
+
+    if(!flag_f || !flag_t) {
+        fprintf(stderr, "Usage: %s [-f filepath] [-t threshold]\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+    
+    
+    struct stat buf;
+    if(stat(path, &buf)) {
+        perror("Could not open file. ");
+        return 1;
+    } 
+
+	int fd = open(path, O_RDWR);
+	nrecords = buf.st_size / szrecord;
+    //printf("threshold:%d szrecord: %d nrecords: %d\n", threshold, szrecord, nrecords);
+    assert(fd >= 0);
+    
+	file_ptr = (char *) mmap(NULL, nrecords * szrecord, PROT_READ | \
 		PROT_WRITE, MAP_SHARED|MAP_FILE, fd, 0);
 	
 	if(file_ptr == (void*)-1) {
@@ -96,7 +126,7 @@ int cilk_main(int argc, char ** argv) {
 		return 1;
 	}
 
-	scratch = (char *) mmap(NULL, NRECORDS * SZRECORD, PROT_READ | PROT_WRITE, \
+	scratch = (char *) mmap(NULL, nrecords * szrecord, PROT_READ | PROT_WRITE, \
 		MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 	
 	if(scratch == (void*)-1) {
@@ -105,7 +135,7 @@ int cilk_main(int argc, char ** argv) {
 		return 1;
 	}
 
-	merge_sort(file_ptr, scratch, NRECORDS);
+	merge_sort(file_ptr, scratch, nrecords); 
 	return 0;
 }
 
