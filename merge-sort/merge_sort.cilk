@@ -1,0 +1,111 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <assert.h>
+
+
+#define NRECORDS 100000
+#define THRESHOLD 10000
+#define SZRECORD 100
+
+#if 0
+#define cilk_spawn 
+#define cilk_sync
+#define cilk_main main
+#endif
+
+using namespace std;
+
+char * file_ptr, * scratch;
+
+extern "C" {
+	int cmp1(const void * r1, const void * r2) {
+		return memcmp(r1, r2, SZRECORD);
+	}
+}
+
+void pmerge(char * fptr, char * sptr,  int len) {
+	int records_written = 0;
+	int part1_written = 0, part2_written = 0;
+	
+	
+	while(part1_written != (len/2) && part2_written != (len - (len/2))) {
+		int c = cmp1(fptr + part1_written * SZRECORD, \
+			fptr + part2_written * SZRECORD);
+
+		if(c > 0)
+			memcpy(sptr + records_written++ * SZRECORD, \
+				fptr + (part2_written++) * SZRECORD, \
+				SZRECORD);
+		else
+			memcpy(sptr + records_written++ * SZRECORD, \
+				fptr + (part1_written++) * SZRECORD, \
+				SZRECORD);
+
+	}
+	
+	if(part1_written != (len/2)) 
+		memcpy(sptr + records_written * SZRECORD, \
+			fptr + (part1_written) * SZRECORD, \
+			(len - records_written) * SZRECORD);
+	
+
+	if(part2_written != (len - (len/2))) 
+		memcpy(sptr + records_written * SZRECORD, \
+			fptr + (part2_written) * SZRECORD, \
+			(len - records_written) * SZRECORD);
+
+}
+
+int merge_sort(char * fptr, char * sptr, int len) {
+	fprintf(stderr, "merge_sort(%x, %x, %d)\n", fptr, sptr, len);
+	if(len <= THRESHOLD) {
+		qsort(fptr, len, SZRECORD, cmp1);
+	}
+	else {
+		int offset = SZRECORD * len/2;
+		cilk_spawn merge_sort(fptr, sptr, len/2);
+		merge_sort(fptr + offset, sptr + offset, len - (len/2));
+		cilk_sync;
+		pmerge(fptr, sptr, len);
+		memcpy(fptr, sptr, len * SZRECORD);
+	}
+
+	return 0;
+}
+
+int cilk_main(int argc, char ** argv) {
+
+	if(argc != 2) {
+		printf("Inappropriate arguments");
+		return 1;
+	}
+	
+	int fd = open(argv[1], O_RDWR);
+	assert(fd >= 0);
+	file_ptr = (char *) mmap(NULL, NRECORDS * SZRECORD, PROT_READ | \
+		PROT_WRITE, MAP_SHARED|MAP_FILE, fd, 0);
+	
+	if(file_ptr == (void*)-1) {
+		perror("mmap 1.in");
+		//printf("Could not map file");
+		return 1;
+	}
+
+	scratch = (char *) mmap(NULL, NRECORDS * SZRECORD, PROT_READ | PROT_WRITE, \
+		MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+	
+	if(scratch == (void*)-1) {
+		// printf("Could not map scratch");
+		perror("mmap scratch");
+		return 1;
+	}
+
+	merge_sort(file_ptr, scratch, NRECORDS);
+	return 0;
+}
+
