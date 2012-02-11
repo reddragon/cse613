@@ -80,60 +80,52 @@ int merge_sort(char * fptr, char * sptr, int len) {
 }
 
 int cilk_main(int argc, char ** argv) {
-    char * path;
-    int opt, flag_f = 0, flag_t = 0;
-    szrecord = 100;
-
-    while((opt = getopt(argc, argv, "f:t:")) != -1) {
-        switch(opt) {
-            case 'f': path = optarg;
-                      flag_f = 1;  
-                      break;
-            case 't': threshold = (off_t)(atoi(optarg)); // TODO: Fix me. Use atoll
-                      flag_t = 1;
-                      break;
-
-            default:
-                    fprintf(stderr, "Usage: %s [-f filepath] [-t threshold]\n",
-                        argv[0]);
-                    exit(EXIT_FAILURE);
-        }
-    }
-
-    if(!flag_f || !flag_t) {
-        fprintf(stderr, "Usage: %s [-f filepath] [-t threshold]\n", argv[0]);
-        exit(EXIT_FAILURE);
-    }
-    
-    
-    struct stat buf;
-    if(stat(path, &buf)) {
-        perror("Could not open file. ");
-        return 1;
-    } 
-
+	char * path;
+	int opt, flag_f = 0, flag_t = 0;
+	szrecord = 100;
+	
+	while ((opt = getopt(argc, argv, "f:t:")) != -1) {
+		switch(opt) {
+		case 'f': path = optarg;
+			flag_f = 1;  
+			break;
+		case 't': threshold = (off_t)(atoi(optarg)); // TODO: Fix me. Use atoll
+			flag_t = 1;
+			break;
+			
+		default:
+			fprintf(stderr, "Usage: %s [-f filepath] [-t threshold]\n",
+				argv[0]);
+			exit(EXIT_FAILURE);
+		}
+	}
+	
+	if(!flag_f || !flag_t) {
+		fprintf(stderr, "Usage: %s [-f filepath] [-t threshold]\n", argv[0]);
+		exit(EXIT_FAILURE);
+	}
+	
+	
+	struct stat buf;
+	if(stat(path, &buf)) {
+		perror("Could not open file. ");
+		return 1;
+	}
+	
 	int fd = open(path, O_RDWR);
 	nrecords = buf.st_size / szrecord;
-    //printf("threshold:%d szrecord: %d nrecords: %d\n", threshold, szrecord, nrecords);
-    assert(fd >= 0);
-    
+	//printf("threshold:%d szrecord: %d nrecords: %d\n", threshold, szrecord, nrecords);
+	assert(fd >= 0);
+
 	file_ptr = (char *) mmap(NULL, nrecords * szrecord, PROT_READ | \
 		PROT_WRITE, MAP_SHARED|MAP_FILE, fd, 0);
 	
-	if(file_ptr == (void*)-1) {
-		perror("mmap 1.in");
-		//printf("Could not map file");
-		return 1;
-	}
+	assert(file_ptr != (void*)-1);
 
 	scratch = (char *) mmap(NULL, nrecords * szrecord, PROT_READ | PROT_WRITE, \
 		MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 	
-	if(scratch == (void*)-1) {
-		// printf("Could not map scratch");
-		perror("mmap scratch");
-		return 1;
-	}
+	assert(scratch != (void*)-1);
 
 	merge_sort(file_ptr, scratch, nrecords); 
 	return 0;
