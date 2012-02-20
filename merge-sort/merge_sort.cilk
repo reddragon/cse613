@@ -41,21 +41,6 @@ struct FileRecord {
 
 };
 
-/*
-namespace std {
-	template <>
-	void
-	swap(FileRecord &a, FileRecord &b) {
-		char buff[128];
-		// fprintf(stderr, "SWAPPING %s AND %s\n", a.base, b.base);
-
-		memcpy(buff, a.base, szrecord);
-		memcpy(a.base, b.base, szrecord);
-		memcpy(b.base, buff, szrecord);
-	}
-}
-*/
-
 struct FileIterator {
 	char *base;
 	size_t offset;
