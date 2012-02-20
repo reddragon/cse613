@@ -47,6 +47,7 @@ struct FileRecord {
 
 };
 
+/*
 namespace std {
 	template <>
 	void
@@ -59,6 +60,7 @@ namespace std {
 		memcpy(b.base, buff, szrecord);
 	}
 }
+*/
 
 struct FileIterator {
 	char *base;
@@ -132,7 +134,7 @@ off_t
 operator-(FileIterator const &lhs, FileIterator const &rhs) {
 	assert(lhs.base == rhs.base);
 	if (rhs.offset > lhs.offset) {
-		fprintf(stderr, "lhs.offset: %ld, rhs.offset: %ld\n", lhs.offset, rhs.offset);
+		fprintf(stderr, "lhs.offset: %ld, rhs.offset: %ld\n", (long int)lhs.offset, (long int)rhs.offset);
 	}
 	assert(lhs.offset >= rhs.offset);
 	return (lhs.offset - rhs.offset);
