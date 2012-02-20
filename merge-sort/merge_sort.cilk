@@ -12,6 +12,13 @@
 
 #include <algorithm>
 
+// 
+// TODO:
+// 
+// [1] Fetch the memory & cache parameters
+// [2] Try M/B way merge sort
+// [3] Implement parallel merge
+// 
 
 //#define NRECORDS  1000000
 //#define THRESHOLD     100
