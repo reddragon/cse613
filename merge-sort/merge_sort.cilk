@@ -17,21 +17,15 @@
 //#define THRESHOLD     100
 off_t nrecords, threshold, szrecord;
 
-#if 1
+#if !defined __cilkplusplus
 #define cilk_spawn 
-#define cilk_sync
+#define cilk_sync 
 #define cilk_main main
 #endif
 
 using namespace std;
 
 char * file_ptr, * scratch;
-
-extern "C" {
-	int cmp1(const void * r1, const void * r2) {
-		return memcmp(r1, r2, szrecord);
-	}
-}
 
 struct FileRecord {
 	mutable char base[100];
@@ -101,6 +95,13 @@ struct FileIterator {
 		return *this;
 	}
 
+	FileIterator
+	operator--(int) {
+		FileIterator t(*this);
+		this->offset -= 1;
+		return t;
+	}
+
 	FileIterator&
 	operator-=(size_t off) {
 		assert(this->offset >= off);
@@ -152,41 +153,9 @@ operator-(FileIterator lhs, off_t rhs) {
 	return lhs;
 }
 
-void pmerge(char * fptr, char * sptr,  size_t len) {
-	char *out = sptr;
-	char * s1, * e1, * s2, * e2;
-	s1 = fptr; e1 = s1 + (len/2) * szrecord;
-	s2 = e1;   e2 = fptr + len * szrecord;
-
-	while (s1 != e1 && s2 != e2) {
-		int c = cmp1(s1, s2);
-
-		if (c > 0) {
-			memcpy(out, s2, szrecord);
-			s2 += szrecord;
-		}
-		else {
-			memcpy(out, s1, szrecord);
-			s1 += szrecord;
-		}
-		out += szrecord;
-	}
-
-	size_t rem = sptr + (len * szrecord) - out;
-	if(s1 != e1) {
-		memcpy(out, s1, rem);
-	}
-
-	if(s2 != e2) {
-		memcpy(out, s2, rem);
-	}
-
-}
-
 int merge_sort(FileIterator start, FileIterator end, FileIterator bstart, FileIterator bend) {
 	//fprintf(stderr, "merge_sort(%d, %d)\n", end-start, bend-bstart);
-	if(end - start <= (size_t)threshold) {
-		// qsort(fptr, len, szrecord, cmp1);
+	if(end - start <= threshold) {
 		std::sort(start, end);
 	}
 	else {
@@ -194,8 +163,6 @@ int merge_sort(FileIterator start, FileIterator end, FileIterator bstart, FileIt
 		cilk_spawn merge_sort(start, start+half, bstart, bstart + half);
 		merge_sort(start + half, end, bstart + half, bend);
 		cilk_sync;
-		// pmerge(fptr, sptr, len);
-		// memcpy(fptr, sptr, len * szrecord);
 		std::merge(start, start + half, start + half, end, bstart);
 		std::copy(bstart, bend, start);
 	}
