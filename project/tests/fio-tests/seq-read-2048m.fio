@@ -1,0 +1,9 @@
+[random-read]
+readwrite=read
+size=2048m
+directory=/tmp/fio-testing/data
+
+ioengine=libaio
+iodepth=8
+direct=1
+invalidate=1
