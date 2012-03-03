@@ -1,0 +1,23 @@
+random-read: (g=0): rw=read, bs=4K-4K/4K-4K, ioengine=libaio, iodepth=8
+Starting 1 process
+
+random-read: (groupid=0, jobs=1): err= 0: pid=6078
+  read : io=2048MB, bw=50098KB/s, iops=12524, runt= 41861msec
+    slat (usec): min=4, max=7604, avg=68.36, stdev=67.63
+    clat (usec): min=1, max=192276, avg=566.29, stdev=1056.97
+    bw (KB/s) : min=23640, max=66152, per=100.10%, avg=50147.33, stdev=7796.71
+  cpu          : usr=0.33%, sys=82.26%, ctx=457560, majf=0, minf=39
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=100.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.1%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued r/w: total=524288/0, short=0/0
+     lat (usec): 2=0.01%, 4=0.01%, 50=0.01%, 100=0.01%, 250=0.12%
+     lat (usec): 500=41.49%, 750=54.58%, 1000=2.48%
+     lat (msec): 2=0.76%, 4=0.20%, 10=0.28%, 20=0.04%, 50=0.04%
+     lat (msec): 250=0.01%
+
+Run status group 0 (all jobs):
+   READ: io=2048MB, aggrb=50097KB/s, minb=51300KB/s, maxb=51300KB/s, mint=41861msec, maxt=41861msec
+
+Disk stats (read/write):
+  sda: ios=520287/220, merge=2478/3795, ticks=56640/70188, in_queue=126208, util=96.27%
