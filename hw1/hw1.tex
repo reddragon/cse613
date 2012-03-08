@@ -1,0 +1,137 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{url}
+\usepackage{color}
+\usepackage{savetrees}
+% \usetikzlibrary{shapes}
+
+
+\linespread{1.5}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1.9ex plus 0.5ex minus 0.2ex}
+
+% \linespread{1.4}
+
+\title{CSE613\\Parallel Programming -- Homework-1}
+
+\author{Dhruv Matani (108267786) \& Gaurav Menghani (108266803)}
+
+\begin{document}
+\maketitle
+
+\clearpage
+
+\tableofcontents
+
+\clearpage
+
+\section{Pairwise Sequence Alignment with Affine Gap Costs}
+
+\clearpage
+
+\section{Pairwise Alignment for Highly Uneven Sequence Lengths}
+
+\clearpage
+
+\section{Randomized Parallel Quicksort with Looping}
+
+\subsection{Upper bound on recursion depth of \texttt{PAR-RANDOMIZED-LOOPING-QUICKSORT}}
+
+We know that the routine \texttt{PAR-PARTITION} randomly splits its
+input, but the routine \texttt{PAR-RANDOMIZED-LOOPING-QUICKSORT}
+doesn't continue unless the split is at least between
+$\frac{1}{4}^{th}$ \& $\frac{3}{4}^{th}$.
+
+What this means is that the upper bound on the depth of
+\texttt{PAR-RANDOMIZED-LOOPING-QUICKSORT} is determined by the
+following recurrence:
+
+$T(n) = T(\frac{3n}{4}) + 1$
+
+$\Rightarrow T(n) = \log_{4/3}{n}$
+
+$\Rightarrow T(n) = \dfrac{\ln{n}}{\ln{4/3}}$
+
+$\Rightarrow T(n) = 3.48\ln{n} < 8\ln{n}$
+
+\subsection{Proof of expected depth and work}
+
+Since \texttt{PAR-PARTITION} chooses a pivot at random, the
+probability of choosing a \textit{good} pivot (i.e. a pivot that
+splits the input into at most $\frac{1}{4}^{th}$ \&
+$\frac{3}{4}^{th}$) is $\frac{1}{2}$.
+
+Hence, it is \textit{expected} that only half the times will
+\texttt{PAR-PARTITION} choose a bad pivot. The other half times, it
+will choose a good pivot. Therefore, the expected number of times
+\texttt{PAR-PARTITION} will be called before it chooses a
+\textit{good} pivot is:
+
+$E[number\ of\ calls] = \frac{1}{2} \times 1 + \frac{1}{2}^2 \times 2 +
+\frac{1}{2}^3 \times 3 + \frac{1}{2}^4 \times 4 + \ldots$
+
+$\Rightarrow E[number\ of\ calls] = 2$
+
+Therefore, \texttt{PAR-PARTITION} splits its input into a constant
+fraction at most every other time it is called (in an expected
+sense). This makes the depth of
+\texttt{PAR-RANDOMIZED-LOOPING-QUICKSORT} $O(\log^{3}{n})$, and the
+work done $O(n\log{n})$.
+
+\subsection{Tracking an Element}
+
+We know that the depth of \texttt{PAR-RANDOMIZED-LOOPING-QUICKSORT}
+(excluding that of \texttt{PAR-PARTITION}) is $< 4\ln{n}$.
+
+The expected number of times we cann \texttt{PAR-PARTITION} per call
+of \texttt{PAR-RANDOMIZED-LOOPING-QUICKSORT} is 2.
+
+Hence, the expected number of times an element $v$ of the array
+features in an array passed to \texttt{PAR-PARTITION} is $R_v =
+8\ln{n}$.
+
+We shall now use Chernoff Bounds. $E[x] = 8\ln{n}$. We need to show
+that $R_v < 32\ln{n}$ with high probability.
+
+$\therefore Pr(X > (1 + \delta)E[X]) \le 
+\left(\dfrac{e^\delta}{(1+\delta)^{(1+\delta)}}\right)^{E[X]}$
+
+Here, $(1 + \delta)E[X] = 32\ln{n}$
+
+$\therefore (1+\delta)8\ln{n} = 32\ln{n}$
+
+$\Rightarrow (1+\delta) = 4$
+
+$\Rightarrow \delta = 3$
+
+$\therefore Pr(X > (1 + \delta)E[X]) \le 
+\left(\dfrac{e^3}{4^4}\right)^{8\ln{n}}$
+
+$\le \left(\dfrac{1}{12.75}\right)^{8\ln{n}}$
+
+$\le \left(\dfrac{1}{698363412.02}\right)^{\ln{n}}$
+
+$\le \left(\dfrac{1}{n}\right)^{\ln{698363412.02}}$
+
+$\le \left(\dfrac{1}{n}\right)^{20.36}$
+
+$\le \dfrac{1}{n^{20.36}} \le \dfrac{1}{n^{2}}$
+
+\subsection{Proof of depth and work with high probability}
+
+In part $(3.3)$ above, we showed that a randomly chosen element
+doesn't feature is more than $32\ln{n}$ calls to
+\texttt{PAR-PARTITION} with high probability.
+
+Hence, the depth and work of \texttt{PAR-PARTITION} is $O(\ln^2{n})$
+and $O(n)$ respectively with high probability.
+
+This makes the depth and work of
+\texttt{PAR-RANDOMIZED-LOOPING-QUICKSORT} $O(\ln^3{n})$ and
+$O(n\ln{n})$ respectively with high probability.
+
+
+\end{document}
