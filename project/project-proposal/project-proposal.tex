@@ -1,0 +1,67 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{url}
+\usepackage{color}
+\usepackage{savetrees}
+\usepackage{listings}
+\usetikzlibrary{shapes}
+
+
+\title{Minute Sort}
+
+\author{Dhruv Matani \& Gaurav Menghani}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We propose to work on the Minute Sort problem. The task is to sort as much
+data as we can, within 60 seconds. To solve this problem, we would try to
+parallelize the problem efficiently.
+\end{abstract}
+
+\clearpage
+
+\section*{Related Work}
+The Minute Sort problem is a regular feature of the Sort Benchmark contest.
+\cite{sort-benchmark}. The current world-record holder is TritonSort which sorted 1353 
+GiB of data sorted in 60 seconds \cite{triton-sort}. Their architecture is described
+on the Sort Benchmark page \cite{sort-benchmark}. As per \cite{sort-benchmark} show they 
+have access to 52 nodes, each with 2 Quadcore processors, 16x500 GiB disks and 
+24 GiB memory. 
+
+Rough calculations show that they are sorting 1353 GiB / 60s = 
+22.5 GiB data each second, and the R/W bandiwdth of their disk architecture
+is about 50 GiB/s. Sorting 22.5 GiB/s would require reading, sorting and
+writing 22.5 GiB of data each second. This tells us that they are operating
+close to disk bandwidth.
+\section*{Architecture \& Algorithm}
+We plan to use OpenMPI for inter-machine parallelism, and Cilk++ for intra-machine parallelism.
+
+As discussed in class, we use over-sampling to choose $k$ good pivots, and hence divide the input into $k$ roughly equal parts. Each machine then works on an independent partition. When all the machines have independently sorted their partition, we can stitch the independent paritions without needing to merge them.
+
+\section*{Challenges}
+\begin{enumerate}
+\item We are practically limited by the disk I/O bandwidth. If the disk can only read / write 50 MB/s, we cannot sort more than (50*60)/2 = 1.5 GB in a minute. Potentially use compression before writing.
+\item Network Bandwidth might be limited. Potentially use compression.
+\item Certain optimizations like ensuring the file is in the cache might help (by reading the file just before the program is run).
+\end{enumerate}
+
+\begin{thebibliography}{}
+
+\bibitem{triton-sort}
+  Alexander Rasmussen, Michael Conley, George Porter, Amin Vahdat 
+  \emph{TritonSort 2011}
+  \url{http://sortbenchmark.org/2011_06_tritonsort.pdf}
+
+\bibitem{sort-benchmark}
+  Sort Benchmark
+  \emph{}
+  \url{http://sortbenchmark.org/}
+  
+\end{thebibliography}{}
+\end{document}
