@@ -2,31 +2,25 @@
 #include <vector>
 #include <string>
 #include <utility>
+#include <stdio.h>
 #include <malloc.h>
 #include <assert.h>
 
 using namespace std;
 
 int dim = 5000;
-int **G, **D, **I, **tbg, **tbd, **tbi;
+int **G, **D, **I;
 int gi = 2, ge = 1, match = 1;
 
 void init() {
     G = (int**)calloc(dim, sizeof(int*));
     D = (int**)calloc(dim, sizeof(int*));
     I = (int**)calloc(dim, sizeof(int*));
-    /* tbg = (int**)calloc(dim, sizeof int*);
-    tbd = (int**)calloc(dim, sizeof int*);
-    tbi = (int**)calloc(dim, sizeof int*); */
 
     for (int i = 0; i < dim + 1; ++i) {
         G[i] = (int*)calloc(dim, sizeof(int));
         D[i] = (int*)calloc(dim, sizeof(int));
         I[i] = (int*)calloc(dim, sizeof(int));
-
-        /* tbg[i] = (int*)calloc(dim, sizeof int);
-        tbd[i] = (int*)calloc(dim, sizeof int);
-        tbi[i] = (int*)calloc(dim, sizeof int); */
     }
     for (int j = 0; j < dim; ++j) {
         G[0][j] = gi + ge*j;
@@ -127,7 +121,6 @@ reconstruct(char *s1, char *s2, int n) {
     std::string r1, r2;
 
     int i = n, j = n;
-    int state = 'G';
 
     while (i > 0 || j > 0) {
         if (i == 0) {
@@ -144,7 +137,7 @@ reconstruct(char *s1, char *s2, int n) {
             int a = D[i][j];
             int b = I[i][j];
             int c = G[i-1][j-1];
-            fprintf(stderr, "a: %d, b: %d, c: %d\n", a, b, c);
+            // fprintf(stderr, "a: %d, b: %d, c: %d\n", a, b, c);
             if (c < a && c < b) {
                 // assert(s1[i] == s2[j]);
                 r1 += s1[i];
@@ -173,10 +166,13 @@ int main() {
     dim = len + 10;
     init();
 
-    char *s1 = (char*)malloc(len + 10);
-    char *s2 = (char*)malloc(len + 10);
-    gets(s1); gets(s2);
-    // printf("s1: %s, s2: %s\n", s1, s2);
+    char *s1 = NULL, *s2 = NULL;
+    size_t z;
+    getline(&s1, &z, stdin);
+    getline(&s2, &z, stdin);
+
+    // s1[len] = s2[len] = '\0';
+    // fprintf(stderr, "s1: %s, s2: %s\n", s1, s2);
     int answer = solve(s1, s2, len);
     printf("%d\n", answer);
     std::pair<std::string, std::string> rc = reconstruct(s1-1, s2-1, len);
