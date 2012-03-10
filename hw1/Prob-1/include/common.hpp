@@ -124,7 +124,6 @@ reconstruct(char *s1, char *s2, int n) {
                 }
                 r1 += '-';
                 r2 += s2[j];
-                // --j;
                 --i;
             } else if (state == 'I') {
                 // Prefer inserts
@@ -133,7 +132,6 @@ reconstruct(char *s1, char *s2, int n) {
                 }
                 r1 += s1[i];
                 r2 += '-';
-                // --i;
                 --j;
             } else {
                 // Prefer matches
