@@ -136,21 +136,23 @@ reconstruct(char *s1, char *s2, int n) {
         } else {
             int a = D[i][j];
             int b = I[i][j];
-            int c = G[i-1][j-1];
+            int c = G[i-1][j-1] + (s1[i] == s2[j] ? 0 : match);
             // fprintf(stderr, "a: %d, b: %d, c: %d\n", a, b, c);
             if (c < a && c < b) {
                 // assert(s1[i] == s2[j]);
                 r1 += s1[i];
                 r2 += s2[j];
                 --i; --j;
-            } else if (b < a && b < c) {
-                r1 += s1[i];
-                r2 += '-';
-                --i;
-            } else {
-                // (a < b && a < c)
+            } else if (a < b && a < c) { // Delete from sequence-1
                 r1 += '-';
                 r2 += s2[j];
+                // --j;
+                --i;
+            } else {
+                // (b < a && b < c) -- Insert (delete from sequence-2)
+                r1 += s1[i];
+                r2 += '-';
+                // --i;
                 --j;
             }
         }
@@ -158,6 +160,20 @@ reconstruct(char *s1, char *s2, int n) {
     return make_pair(std::string(r1.rbegin(), r1.rend()), std::string(r2.rbegin(), r2.rend()));
 
 }
+
+void printG(int n) {
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (j == 0) {
+                fprintf(stderr, " %2d", G[i][j]);
+            } else {
+                fprintf(stderr, " | %2d ", G[i][j]);
+            }
+        }
+        fprintf(stderr, "\n");
+    }
+}
+
 
 int main() {
     int len;
@@ -179,4 +195,5 @@ int main() {
 
     printf("%s\n%s\n", rc.first.c_str(), rc.second.c_str());
 
+    // printG(len);
 }
