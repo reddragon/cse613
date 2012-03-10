@@ -7,12 +7,12 @@
 #include <string>
 #include <cstdio>
 
-#define G_I 2
-#define G_E 1
-#define S(X,Y) ((X==Y)?0:1)
+#include "../include/common.hpp"
+
 int n;
 char *X, *Y;
 int **D, **I, **G;
+
 #define MAT_OP 0
 #define DEL_OP 1
 #define INS_OP 2
@@ -52,7 +52,7 @@ void init() {
             G[i][j] = 0;
         
         if(i > 0 && j == 0)
-            G[i][j] = G_I + (G_E * i);
+            G[i][j] = GI + (GE * i);
     }
 
     for(int j = 0; j <= n; j++) {
@@ -61,7 +61,7 @@ void init() {
             G[i][j] = 0;
         
         if(i == 0 && j > 0)
-            G[i][j] = G_I + (G_E * j);
+            G[i][j] = GI + (GE * j);
     }
 }
 
@@ -94,7 +94,7 @@ void reconstruct_path() {
            case DEL_OP:
                 T = D[i][j];
                 CUR_OP = DEL_OP;
-                if (G[i-1][j] + G_I + G_E == T) {
+                if (G[i-1][j] + GI + GE == T) {
                     CUR_OP = MAT_OP;
                 }
                 i--;
@@ -103,7 +103,7 @@ void reconstruct_path() {
            case INS_OP:
                 T = I[i][j];
                 CUR_OP = INS_OP;
-                if (G[i][j-1] + G_I + G_E == T) {
+                if (G[i][j-1] + GI + GE == T) {
                     CUR_OP = MAT_OP;
                 }
                 j--;
@@ -171,29 +171,29 @@ int main() {
             if(i > 0 && j > 0) {
                 D[i][j] = D[i-1][j];
                 
-                if(G[i-1][j] + G_I < D[i][j]) {
-                    D[i][j] = G[i-1][j] + G_I;
+                if(G[i-1][j] + GI < D[i][j]) {
+                    D[i][j] = G[i-1][j] + GI;
                 }
-                D[i][j] += G_E;
+                D[i][j] += GE;
             }
             
             if(i == 0 && j > 0) {
-                D[i][j] = G[0][j] + G_E;
+                D[i][j] = G[0][j] + GE;
             }
 
             // Calculate I
             if(i > 0 && j > 0) {
                 I[i][j] = I[i][j-1];
                 
-                if(G[i][j-1] + G_I < I[i][j]) {
-                    I[i][j] = G[i][j-1] + G_I;
+                if(G[i][j-1] + GI < I[i][j]) {
+                    I[i][j] = G[i][j-1] + GI;
                 }
 
-                I[i][j] += G_E;
+                I[i][j] += GE;
             }   
 
             if(i > 0 && j == 0) {
-                I[i][j] = G[i][0] + G_E;
+                I[i][j] = G[i][0] + GE;
             }
 
             // Calculate G
