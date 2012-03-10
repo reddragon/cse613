@@ -21,4 +21,4 @@ test:
 	make
 
 clean:
-	rm decafch lex.yy.c decaf.tab.c decaf.tab.h decaf.output > /dev/null 2>&1
+	rm a.out b.out c.out e.out check.out > /dev/null 2>&1
