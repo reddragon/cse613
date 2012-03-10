@@ -138,22 +138,20 @@ reconstruct(char *s1, char *s2, int n) {
             int b = I[i][j];
             int c = G[i-1][j-1] + (s1[i] == s2[j] ? 0 : match);
             // fprintf(stderr, "a: %d, b: %d, c: %d\n", a, b, c);
-            if (c < a && c < b) {
-                // assert(s1[i] == s2[j]);
-                r1 += s1[i];
-                r2 += s2[j];
-                --i; --j;
-            } else if (a < b && a < c) { // Delete from sequence-1
+            if (G[i][j] == a) { // Delete from sequence-1
                 r1 += '-';
                 r2 += s2[j];
                 // --j;
                 --i;
-            } else {
-                // (b < a && b < c) -- Insert (delete from sequence-2)
+            } else if (G[i][j] == b) { // Insert (delete from sequence-2)
                 r1 += s1[i];
                 r2 += '-';
                 // --i;
                 --j;
+            } else { // Match
+                r1 += s1[i];
+                r2 += s2[j];
+                --i; --j;
             }
         }
     }
