@@ -80,7 +80,7 @@ int GETI(char *s1, char *s2, int i, int j) {
 
 int s(char *s1, char *s2, int r1, int r2, int c1, int c2) {
     if (r2 == r1) {
-        // Base Case
+        // Base Case (TODO: Make this larger)
         GETD(s1, s2, r1, c1);
         GETI(s1, s2, r1, c1);
         return GETG(s1, s2, r1, c1);
