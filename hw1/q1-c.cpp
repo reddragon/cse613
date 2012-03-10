@@ -121,6 +121,7 @@ reconstruct(char *s1, char *s2, int n) {
     std::string r1, r2;
 
     int i = n, j = n;
+    int state = 'G';
 
     while (i > 0 || j > 0) {
         if (i == 0) {
@@ -138,20 +139,67 @@ reconstruct(char *s1, char *s2, int n) {
             int b = I[i][j];
             int c = G[i-1][j-1] + (s1[i] == s2[j] ? 0 : match);
             // fprintf(stderr, "a: %d, b: %d, c: %d\n", a, b, c);
-            if (G[i][j] == a) { // Delete from sequence-1
-                r1 += '-';
-                r2 += s2[j];
-                // --j;
-                --i;
-            } else if (G[i][j] == b) { // Insert (delete from sequence-2)
-                r1 += s1[i];
-                r2 += '-';
-                // --i;
-                --j;
-            } else { // Match
-                r1 += s1[i];
-                r2 += s2[j];
-                --i; --j;
+
+            if (state == 'D') {
+                // Prefer deletes
+                if (G[i][j] == a) { // Delete from sequence-1
+                    r1 += '-';
+                    r2 += s2[j];
+                    // --j;
+                    --i;
+                    state = 'D';
+                } else if (G[i][j] == b) { // Insert (delete from sequence-2)
+                    r1 += s1[i];
+                    r2 += '-';
+                    // --i;
+                    --j;
+                    state = 'I';
+                } else { // Match
+                    r1 += s1[i];
+                    r2 += s2[j];
+                    --i; --j;
+                    state = 'G';
+                }
+            } else if (state == 'I') {
+                // Prefer inserts
+                if (G[i][j] == b) { // Insert (delete from sequence-2)
+                    r1 += s1[i];
+                    r2 += '-';
+                    // --i;
+                    --j;
+                    state = 'I';
+                } else if (G[i][j] == a) { // Delete from sequence-1
+                    r1 += '-';
+                    r2 += s2[j];
+                    // --j;
+                    --i;
+                    state = 'D';
+                } else { // Match
+                    r1 += s1[i];
+                    r2 += s2[j];
+                    --i; --j;
+                    state = 'G';
+                }
+            } else {
+                // Prefer matches
+                if (G[i][j] == c) { // Match
+                    r1 += s1[i];
+                    r2 += s2[j];
+                    --i; --j;
+                    state = 'G';
+                } else if (G[i][j] == a) { // Delete from sequence-1
+                    r1 += '-';
+                    r2 += s2[j];
+                    // --j;
+                    --i;
+                    state = 'D';
+                } else { // Insert (delete from sequence-2)
+                    r1 += s1[i];
+                    r2 += '-';
+                    // --i;
+                    --j;
+                    state = 'I';
+                }
             }
         }
     }
