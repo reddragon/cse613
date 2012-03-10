@@ -135,8 +135,6 @@ reconstruct(char *s1, char *s2, int n) {
             r2 += '-';
             --i;
         } else {
-            int a = D[i][j];
-            int b = I[i][j];
             int c = G[i-1][j-1] + (s1[i] == s2[j] ? 0 : match);
             // fprintf(stderr, "a: %d, b: %d, c: %d\n", a, b, c);
 
