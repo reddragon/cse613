@@ -40,8 +40,8 @@ int main() {
     // fprintf(stderr, "s1: %s, s2: %s\n", s1, s2);
     int answer = solve(X, Y, len);
     printf("%d\n", answer);
-    std::pair<std::string, std::string> rc = reconstruct(X-1, Y-1, len);
 
+    std::pair<std::string, std::string> rc = reconstruct(X-1, Y-1, len);
     printf("%s\n%s\n", rc.first.c_str(), rc.second.c_str());
 
     // printG(len);
