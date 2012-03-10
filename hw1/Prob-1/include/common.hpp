@@ -15,8 +15,50 @@
 // Dimension for base case of recursive solution.
 #define BASE_DIM 32
 
+#if defined __cilkplusplus
+#define main cilk_main
+#define CFOR cilk_for
+#else
+#define CFOR for
+#endif
+
+
+extern int len;
 extern char *X, *Y;
 extern int **D, **I, **G;
+
+void init_arrays(int);
+
+void user_input() {
+    scanf("%d\n", &len);
+    init_arrays(len + 1);
+
+    X = Y = NULL;
+    size_t z;
+
+    getline(&X, &z, stdin);
+    getline(&Y, &z, stdin);
+}
+
+void init_arrays(int dim) {
+    G = (int**)calloc(dim, sizeof(int*));
+    D = (int**)calloc(dim, sizeof(int*));
+    I = (int**)calloc(dim, sizeof(int*));
+
+    for (int i = 0; i < dim; ++i) {
+        G[i] = (int*)calloc(dim, sizeof(int));
+        D[i] = (int*)calloc(dim, sizeof(int));
+        I[i] = (int*)calloc(dim, sizeof(int));
+    }
+    for (int j = 0; j < dim; ++j) {
+        G[0][j] = GI + GE*j;
+        G[j][0] = GI + GE*j;
+        D[0][j] = G[0][j] + GE;
+        I[j][0] = G[j][0] + GE;
+    }
+    G[0][0] = 0;
+}
+
 
 int GETG(char *s1, char *s2, int i, int j) {
     int v = 0;

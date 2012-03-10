@@ -14,40 +14,6 @@ int len = -1;
 char *X, *Y;
 int **G, **D, **I;
 
-void init(int);
-
-void user_input() {
-    scanf("%d\n", &len);
-    init(len + 1);
-
-    X = Y = NULL;
-    size_t z;
-
-    getline(&X, &z, stdin);
-    getline(&Y, &z, stdin);
-}
-
-void init(int dim) {
-    G = (int**)calloc(dim, sizeof(int*));
-    D = (int**)calloc(dim, sizeof(int*));
-    I = (int**)calloc(dim, sizeof(int*));
-
-    for (int i = 0; i < dim; ++i) {
-        G[i] = (int*)calloc(dim, sizeof(int));
-        D[i] = (int*)calloc(dim, sizeof(int));
-        I[i] = (int*)calloc(dim, sizeof(int));
-    }
-    for (int j = 0; j < dim; ++j) {
-        G[0][j] = GI + GE*j;
-        G[j][0] = GI + GE*j;
-        D[0][j] = G[0][j] + GE;
-        I[j][0] = G[j][0] + GE;
-    }
-    G[0][0] = 0;
-
-}
-
-
 int solve(char *s1, char *s2, int n) {
     return agc_dnc(s1-1, s2-1, 1, n, 1, n);
 }
