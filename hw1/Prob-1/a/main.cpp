@@ -7,8 +7,6 @@
 #include <string>
 #include <cstdio>
 
-#include "../include/common.hpp"
-
 int n;
 char *X, *Y;
 int **D, **I, **G;
@@ -16,35 +14,28 @@ int **D, **I, **G;
 #define MAT_OP 0
 #define DEL_OP 1
 #define INS_OP 2
+#define GI 2
+#define GE 1
+#define S(x,y) ((x==y) ? 0 : 1)
 
 void init() {
-    std::cin >> n;
-    X = (char *) malloc(sizeof(char)*(n+10));
-    Y = (char *) malloc(sizeof(char)*(n+10));
+    scanf("%d\n", &n);
+    X = (char *) malloc(sizeof(char)*(n*4));
+    Y = (char *) malloc(sizeof(char)*(n*4));
     assert(X && Y);
     D = (int **) calloc((n+10), sizeof(int *));
     I = (int **) calloc((n+10), sizeof(int *));
     G = (int **) calloc((n+10), sizeof(int *));
     
     assert(D && I && G);
-    for(int i = 0; i < (n+10)+1; i++) {
+    for(int i = 0; i < (n+10); i++) {
         D[i] = (int *) calloc((n+10), sizeof(int));
         I[i] = (int *) calloc((n+10), sizeof(int));
         G[i] = (int *) calloc((n+10), sizeof(int));
         assert(D[i] && I[i] && G[i]);
     }
-
-    std::cin >> X;
-    std::cin >> Y;
     
-    for(int i = n; i >= 1; i--) {
-        X[i] = X[i-1];
-        Y[i] = Y[i-1];
-    }
-    X[0] = '-';
-    Y[0] = '-';
-    X[n+1] = '\0';
-    Y[n+1] = '\0';
+    scanf("%s%s", X, Y);
     
     for(int i = 0; i <= n; i++) {
         int j = 0;
@@ -157,16 +148,26 @@ void reconstruct_path() {
     std::cout << b << std::endl; 
 }
 
+void clean_up() {
+    free(X);
+    free(Y);
+
+    for(int i = 0; i < (n+10); i++) {
+        free(D[i]);
+        free(I[i]);
+        free(G[i]);
+    }
+    free(D);
+    free(I);
+    free(G);
+}
+
 int main() {
-    freopen("rand-1024-in.txt", "r", stdin);
     init();
-    //D[0][1] = G[1][0];
-    D[0][1] = 1;
     std::cout << sizeof(D) << std::endl; 
     
     for(int i = 0; i <= n; i++) {
         for(int j = 0; j <= n; j++) {
-            std::cout << i << " " << j << std::endl; 
             // Calculate D
             if(i > 0 && j > 0) {
                 D[i][j] = D[i-1][j];
@@ -198,7 +199,7 @@ int main() {
 
             // Calculate G
             if(i > 0 && j > 0) {
-                G[i][j] = G[i-1][j-1]+S(X[i],Y[j]);
+                G[i][j] = G[i-1][j-1]+S(X[i-1],Y[j-1]);
                 
                 if(D[i][j] < G[i][j]) {
                     G[i][j] = D[i][j];
@@ -212,5 +213,6 @@ int main() {
     }
 
     std::cout << G[n][n] << std::endl;
-    /* reconstruct_path(); */
+    reconstruct_path(); 
+    clean_up();
 }
