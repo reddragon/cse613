@@ -12,6 +12,9 @@
 #define GE     1
 #define S(X,Y) ((X==Y) ? 0 : 1)
 
+// Dimension for base case of recursive solution.
+#define BASE_DIM 32
+
 extern char *X, *Y;
 extern int **D, **I, **G;
 
@@ -61,13 +64,34 @@ int GETI(char *s1, char *s2, int i, int j) {
     return I[i][j] = v;
 }
 
+int agc_naive(char *s1, char *s2, int r1, int r2, int c1, int c2) {
+    // fprintf(stderr, "[1] r1: %d, r2: %d, c1: %d, c2: %d\n", r1, r2, c1, c2);
+    for (; r1 < r2 + 1; ++r1) {
+        // fprintf(stderr, "R1: %d\n", r1);
+        for(int c = c1; c < c2 + 1; ++c) {
+            // fprintf(stderr, "(r1, c1) == (%d, %d)\n", r1, c1);
+            GETD(s1, s2, r1, c);
+            GETI(s1, s2, r1, c);
+            GETG(s1, s2, r1, c);
+        }
+    }
+    // fprintf(stderr, "[2] r1: %d, r2: %d, c1: %d, c2: %d\n", r1, r2, c1, c2);
+    return G[r2][c2];
+}
+
 int agc_dnc(char *s1, char *s2, int r1, int r2, int c1, int c2) {
-    if (r2 == r1) {
-        // Base Case (TODO: Make this larger)
-        GETD(s1, s2, r1, c1);
-        GETI(s1, s2, r1, c1);
-        return GETG(s1, s2, r1, c1);
-    } else {
+    if (r2 - r1 + 1 <= BASE_DIM) {
+        return agc_naive(s1, s2, r1, r2, c1, c2);
+    }
+    /* 
+       else if (r2 == r1) {
+       // Base Case (TODO: Make this larger)
+       GETD(s1, s2, r1, c1);
+       GETI(s1, s2, r1, c1);
+       return GETG(s1, s2, r1, c1);
+       } 
+    */
+    else {
         int q11_r1 = r1;
         int q11_r2 = (r1+r2-1)/2;
         int q11_c1 = c1;

@@ -32,7 +32,7 @@ void init(int dim) {
     D = (int**)calloc(dim, sizeof(int*));
     I = (int**)calloc(dim, sizeof(int*));
 
-    for (int i = 0; i < dim + 1; ++i) {
+    for (int i = 0; i < dim; ++i) {
         G[i] = (int*)calloc(dim, sizeof(int));
         D[i] = (int*)calloc(dim, sizeof(int));
         I[i] = (int*)calloc(dim, sizeof(int));
