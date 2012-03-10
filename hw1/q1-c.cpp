@@ -142,63 +142,34 @@ reconstruct(char *s1, char *s2, int n) {
 
             if (state == 'D') {
                 // Prefer deletes
-                if (G[i][j] == a) { // Delete from sequence-1
-                    r1 += '-';
-                    r2 += s2[j];
-                    // --j;
-                    --i;
-                    state = 'D';
-                } else if (G[i][j] == b) { // Insert (delete from sequence-2)
-                    r1 += s1[i];
-                    r2 += '-';
-                    // --i;
-                    --j;
-                    state = 'I';
-                } else { // Match
-                    r1 += s1[i];
-                    r2 += s2[j];
-                    --i; --j;
+                if (D[i][j] == G[i-1][j] + gi + ge) {
                     state = 'G';
                 }
+                r1 += '-';
+                r2 += s2[j];
+                // --j;
+                --i;
             } else if (state == 'I') {
                 // Prefer inserts
-                if (G[i][j] == b) { // Insert (delete from sequence-2)
-                    r1 += s1[i];
-                    r2 += '-';
-                    // --i;
-                    --j;
-                    state = 'I';
-                } else if (G[i][j] == a) { // Delete from sequence-1
-                    r1 += '-';
-                    r2 += s2[j];
-                    // --j;
-                    --i;
-                    state = 'D';
-                } else { // Match
-                    r1 += s1[i];
-                    r2 += s2[j];
-                    --i; --j;
+                if (I[i][j] == G[i][j-1] + gi + ge) {
                     state = 'G';
                 }
+                r1 += s1[i];
+                r2 += '-';
+                // --i;
+                --j;
             } else {
                 // Prefer matches
-                if (G[i][j] == c) { // Match
+                if (G[i][j] == D[i][j]) { // Delete from sequence-1
+                    state = 'D';
+                } else if (G[i][j] == I[i][j]) { // Insert (delete from sequence-2)
+                    state = 'I';
+                } else { // Match
+                    assert(G[i][j] == c);
                     r1 += s1[i];
                     r2 += s2[j];
                     --i; --j;
                     state = 'G';
-                } else if (G[i][j] == a) { // Delete from sequence-1
-                    r1 += '-';
-                    r2 += s2[j];
-                    // --j;
-                    --i;
-                    state = 'D';
-                } else { // Insert (delete from sequence-2)
-                    r1 += s1[i];
-                    r2 += '-';
-                    // --i;
-                    --j;
-                    state = 'I';
                 }
             }
         }
