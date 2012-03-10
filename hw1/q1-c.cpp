@@ -80,7 +80,7 @@ int GETI(char *s1, char *s2, int i, int j) {
 
 int s(char *s1, char *s2, int r1, int r2, int c1, int c2) {
     if (r2 == r1) {
-        // Base Case
+        // Base Case (TODO: Make this larger)
         GETD(s1, s2, r1, c1);
         GETI(s1, s2, r1, c1);
         return GETG(s1, s2, r1, c1);
@@ -121,6 +121,7 @@ reconstruct(char *s1, char *s2, int n) {
     std::string r1, r2;
 
     int i = n, j = n;
+    int state = 'G';
 
     while (i > 0 || j > 0) {
         if (i == 0) {
@@ -134,30 +135,60 @@ reconstruct(char *s1, char *s2, int n) {
             r2 += '-';
             --i;
         } else {
-            int a = D[i][j];
-            int b = I[i][j];
-            int c = G[i-1][j-1];
+            int c = G[i-1][j-1] + (s1[i] == s2[j] ? 0 : match);
             // fprintf(stderr, "a: %d, b: %d, c: %d\n", a, b, c);
-            if (c < a && c < b) {
-                // assert(s1[i] == s2[j]);
-                r1 += s1[i];
-                r2 += s2[j];
-                --i; --j;
-            } else if (b < a && b < c) {
-                r1 += s1[i];
-                r2 += '-';
-                --i;
-            } else {
-                // (a < b && a < c)
+
+            if (state == 'D') {
+                // Prefer deletes
+                if (D[i][j] == G[i-1][j] + gi + ge) {
+                    state = 'G';
+                }
                 r1 += '-';
                 r2 += s2[j];
+                // --j;
+                --i;
+            } else if (state == 'I') {
+                // Prefer inserts
+                if (I[i][j] == G[i][j-1] + gi + ge) {
+                    state = 'G';
+                }
+                r1 += s1[i];
+                r2 += '-';
+                // --i;
                 --j;
+            } else {
+                // Prefer matches
+                if (G[i][j] == D[i][j]) { // Delete from sequence-1
+                    state = 'D';
+                } else if (G[i][j] == I[i][j]) { // Insert (delete from sequence-2)
+                    state = 'I';
+                } else { // Match
+                    assert(G[i][j] == c);
+                    r1 += s1[i];
+                    r2 += s2[j];
+                    --i; --j;
+                    state = 'G';
+                }
             }
         }
     }
     return make_pair(std::string(r1.rbegin(), r1.rend()), std::string(r2.rbegin(), r2.rend()));
 
 }
+
+void printG(int n) {
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (j == 0) {
+                fprintf(stderr, " %2d", G[i][j]);
+            } else {
+                fprintf(stderr, " | %2d ", G[i][j]);
+            }
+        }
+        fprintf(stderr, "\n");
+    }
+}
+
 
 int main() {
     int len;
@@ -179,4 +210,5 @@ int main() {
 
     printf("%s\n%s\n", rc.first.c_str(), rc.second.c_str());
 
+    // printG(len);
 }
