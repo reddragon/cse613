@@ -13,13 +13,17 @@
 #define S(X,Y) ((X==Y) ? 0 : 1)
 
 // Dimension for base case of recursive solution.
-#define BASE_DIM 32
+#define BASE_DIM 1
 
 #if defined __cilkplusplus
 #define main cilk_main
 #define CFOR cilk_for
+#define CSPAWN cilk_spawn
+#define CSYNC  cilk_sync
 #else
 #define CFOR for
+#define CSPAWN
+#define CSYNC
 #endif
 
 
@@ -155,10 +159,54 @@ int agc_dnc(char *s1, char *s2, int r1, int r2, int c1, int c2) {
         int q22_c2 = c2;
 
         agc_dnc(s1, s2, q11_r1, q11_r2, q11_c1, q11_c2);
-        agc_dnc(s1, s2, q12_r1, q12_r2, q12_c1, q12_c2);
+        CSPAWN agc_dnc(s1, s2, q12_r1, q12_r2, q12_c1, q12_c2);
         agc_dnc(s1, s2, q21_r1, q21_r2, q21_c1, q21_c2);
+        CSYNC;
         return agc_dnc(s1, s2, q22_r1, q22_r2, q22_c1, q22_c2);
     }
+}
+
+int pow2round(int n) {
+    int l2 = 1, n1 = n;
+    while (n1 > 1) {
+        ++l2;
+        n1 >>= 1;
+    }
+    int r = 1 << (l2-1);
+    return r;
+}
+
+int agc_cache_efficient(char *s1, char *s2, int n, int q) {
+    q = pow2round(q);
+    int nblk = q;
+    int blksize = n / q;
+    // fprintf(stderr, "agc_cache_efficient(%d, %d)::nblk: %d\n", n, q, nblk);
+
+    for (int z = 1; z < nblk*2; ++z) {
+        // Process all squares in parallel
+        int nsquares = (z <= nblk ? z : nblk*2 - z);
+        int lrow = 0; // The index of the leftmost row
+        int lcol = 0; // The index of the leftmost column
+
+        if (z <= nblk) {
+            lrow = z - 1;
+            lcol = 0;
+        } else {
+            lcol = z - nblk;
+            lrow = nblk - 1;
+        }
+
+        // fprintf(stderr, "lrow: %d, lcol: %d, nsquares: %d, blksize: %d\n", lrow, lcol, nsquares, blksize);
+        CFOR(int i = 0; i < nsquares; ++i) {
+            int r1 = (lrow-i)*blksize + 1;
+            int r2 = r1 + blksize - 1;
+            int c1 = (lcol+i)*blksize + 1;
+            int c2 = c1 + blksize - 1;
+            // fprintf(stderr, "r1, r2, c1, c2: %d, %d, %d, %d\n", r1, r2, c1, c2);
+            agc_dnc(s1, s2, r1, r2, c1, c2);
+        }
+    }
+    return G[n][n];
 }
 
 std::pair<std::string, std::string>

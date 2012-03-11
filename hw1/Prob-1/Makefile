@@ -1,6 +1,5 @@
 CFLAGS := $(CFLAGS) -Wall
-CILKXX := g++
-# cilk++
+CILKXX := cilk++
 
 all: a.out b.out c.out e.out check.out
 
