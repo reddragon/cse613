@@ -26,7 +26,7 @@ int main() {
     int len = std::min(strlen(s1), strlen(s2));
     assert(len > 0);
     --len;
-    s1[len] = s1[len] = '\0';
+    s1[len] = s2[len] = '\0';
 
     // fprintf(stderr, "s1: %s\ns2: %s\n", s1, s2);
 
