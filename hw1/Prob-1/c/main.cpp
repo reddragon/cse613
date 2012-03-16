@@ -48,7 +48,19 @@ int main(int argc, char *argv[]) {
 
     // s1[len] = s2[len] = '\0';
     // fprintf(stderr, "s1: %s, s2: %s\n", s1, s2);
+
+#if defined CILKVIEWPLOT
+    cilk::cilkview cv;
+    cv.start();
+#endif // CILKVIEWPLOT
+
     int answer = solve(X, Y, len);
+
+#if defined CILKVIEWPLOT
+    cv.stop();
+    cv.dump("agc_partc");
+#endif // CILKVIEWPLOT
+
     printf("%d\n", answer);
 
     std::pair<std::string, std::string> rc = reconstruct(X-1, Y-1, len);

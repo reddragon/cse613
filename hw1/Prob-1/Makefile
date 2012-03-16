@@ -1,5 +1,5 @@
 XFLAGS := $(CXXFLAGS) -Wall -O2
-CILKFLAGS := $(XFLAGS)
+CILKFLAGS := $(XFLAGS) -lcilkutil
 CXXFLAGS := $(XFLAGS) -Wno-unused-result
 CILKXX := cilk++
 

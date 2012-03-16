@@ -9,6 +9,7 @@
 
 #if defined __cilkplusplus
 #include <cilk.h>
+#include <cilkview.h>
 #endif
 
 #define GI     2
