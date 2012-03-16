@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
 
 #if defined CILKVIEWPLOT
     cv.stop();
-    cv.dump("agc_partc");
+    cv.dump("agc");
 #endif // CILKVIEWPLOT
 
     printf("%d\n", answer);
