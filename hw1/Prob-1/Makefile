@@ -7,7 +7,7 @@ a.out: a/main.cpp include/common.hpp
 	$(CXX) -o a.out a/main.cpp -O2 $(CFLAGS)
 
 b.out: b/main.cpp include/common.hpp
-	$(CXX) -o b.out b/main.cpp -O2 $(CFLAGS)
+	$(CILKXX) -o b.out b/main.cpp -O2 $(CFLAGS)
 
 c.out: c/main.cpp include/common.hpp
 	$(CXX) -o c.out c/main.cpp -O2 $(CFLAGS)
