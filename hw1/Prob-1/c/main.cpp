@@ -35,7 +35,12 @@ void printMatrix(int n, int **M) {
 
 
 // 1st argument is Base Case dimension (i.e. 4 => 4x4 is base case) (default: 16)
+// 2nd argument is the input file path
 int main(int argc, char *argv[]) {
+    if (argc > 2) {
+        freopen(argv[2], "r", stdin);
+    }
+
     user_input();
 
     base_dimension = 16;

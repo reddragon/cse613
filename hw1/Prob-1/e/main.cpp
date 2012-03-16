@@ -15,6 +15,7 @@ int solve(char *s1, char *s2, int n, int q) {
 
 // 1st argument is number of processors
 // 2nd argument is Base Case dimension (i.e. 4 => 4x4 is base case)
+// 3rd argument is the input file path
 int main(int argc, char *argv[]) {
     int nworkers = 
 #if defined __cilkplusplus
@@ -25,6 +26,10 @@ int main(int argc, char *argv[]) {
 
     if (argc > 1) {
         nworkers = atoi(argv[1]);
+    }
+
+    if (argc > 2) {
+        freopen(argv[2], "r", stdin);
     }
 
     user_input();
