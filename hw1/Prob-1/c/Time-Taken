@@ -1,0 +1,89 @@
+### rand-8192-in.txt ###
+
+login2$ cat time_base_1
+11.41user 3.54system 0:01.37elapsed 1091%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (5major+197292minor)pagefaults 0swaps
+login2$ cat time_base_2
+6.22user 2.26system 0:00.75elapsed 1127%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+197314minor)pagefaults 0swaps
+login2$ cat time_base_4
+4.45user 2.08system 0:00.58elapsed 1115%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+197298minor)pagefaults 0swaps
+login2$ cat time_base_8
+3.47user 1.63system 0:00.47elapsed 1075%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+197300minor)pagefaults 0swaps
+login2$ cat time_base_16
+3.16user 2.01system 0:00.48elapsed 1079%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+197287minor)pagefaults 0swaps
+login2$ cat time_base_32
+3.03user 2.19system 0:00.47elapsed 1103%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+197280minor)pagefaults 0swaps
+login2$ cat time_base_64
+3.06user 2.25system 0:00.48elapsed 1091%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+197274minor)pagefaults 0swaps
+login2$ cat time_base_128
+3.30user 2.73system 0:00.54elapsed 1108%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+197266minor)pagefaults 0swaps
+login2$ cat time_base_256
+3.58user 3.20system 0:00.60elapsed 1114%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+197399minor)pagefaults 0swaps
+login2$ cat time_base_512
+4.08user 3.82system 0:00.70elapsed 1126%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+197265minor)pagefaults 0swaps
+login2$ cat time_base_1024
+4.84user 4.81system 0:00.84elapsed 1146%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+197588minor)pagefaults 0swaps
+login2$ cat time_base_2048
+5.64user 6.30system 0:01.04elapsed 1148%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+197261minor)pagefaults 0swaps
+login2$ cat time_base_4096
+6.99user 8.15system 0:01.30elapsed 1159%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+197660minor)pagefaults 0swaps
+
+### rand-8192-in.txt ###
+
+### rand-16384-in.txt ###
+
+login2$ cat time_base_1
+31.46user 10.38system 0:03.62elapsed 1154%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (7major+792104minor)pagefaults 0swaps
+login2$ cat time_base_2
+22.04user 8.04system 0:02.61elapsed 1149%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+791647minor)pagefaults 0swaps
+login2$ cat time_base_4
+16.20user 7.65system 0:02.09elapsed 1139%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+791537minor)pagefaults 0swaps
+login2$ cat time_base_8
+14.43user 7.48system 0:01.93elapsed 1132%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+792141minor)pagefaults 0swaps
+login2$ cat time_base_16
+13.25user 7.38system 0:01.83elapsed 1127%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+791579minor)pagefaults 0swaps
+login2$ cat time_base_32
+12.90user 7.96system 0:01.84elapsed 1128%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+791521minor)pagefaults 0swaps
+login2$ cat time_base_64
+13.56user 8.75system 0:01.96elapsed 1138%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+792570minor)pagefaults 0swaps
+login2$ cat time_base_128
+14.01user 10.27system 0:02.13elapsed 1139%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+792136minor)pagefaults 0swaps
+login2$ cat time_base_256
+13.36user 10.81system 0:02.12elapsed 1138%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+791516minor)pagefaults 0swaps
+login2$ cat time_base_512
+14.95user 12.86system 0:02.41elapsed 1150%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+792307minor)pagefaults 0swaps
+login2$ cat time_base_1024
+16.82user 15.82system 0:02.82elapsed 1155%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+792062minor)pagefaults 0swaps
+login2$ cat time_base_2048
+19.45user 19.97system 0:03.39elapsed 1160%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+791835minor)pagefaults 0swaps
+login2$ cat time_base_4096
+23.43user 25.26system 0:04.16elapsed 1170%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+791551minor)pagefaults 0swaps
+
+
+### rand-16384-in.txt ###
+
