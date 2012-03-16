@@ -30,6 +30,81 @@
 
 \section{Pairwise Sequence Alignment with Affine Gap Costs}
 
+Compiling all the programs:
+\begin{verbatim}
+$ cd Prob-1
+$ make
+\end{verbatim}
+
+\subsection{Serial algorithm}
+
+Please check archive for the code
+
+Running the code:
+\begin{verbatim}
+$ a/a.out < input_file_path
+\end{verbatim}
+
+\subsection{Parallelized algorithm by parallelizing the computation of the diagonal}
+
+Running the code:
+\begin{verbatim}
+$ b/a.out [string size in bytes in the input file (this is a power of 2)] 1 < input_file_path
+\end{verbatim}
+
+\textit{Analysis of the resulting parallelism:} $T_{\infty} = \log{1} + \log{2} + \log{3} + \log{4} + \ldots{} + \log{n}$
+
+$\Rightarrow T_{\infty} = \log{n!}$
+
+$\Rightarrow T_{\infty} = n\log{n}$
+
+$\therefore$ Parallelism = $\dfrac{n^2}{n\log{n}} = \dfrac{n}{\log{n}}$
+
+\subsection{Parallel Divide \& Conquer algorithm}
+
+Running the code:
+\begin{verbatim}
+$ c/a.out [base case size (this is a power of 2 - default: 16)] < input_file_path
+\end{verbatim}
+
+The best running time we got was for a base case of a block of size $32 \times 32$ elements.
+
+\subsection{Parallelism and space usage of the Parallel Divide \& Conquer algorithm}
+
+$T_{\infty}(n) = 3T_{\infty}(\frac{n}{2}) + O(1)$
+
+$\Rightarrow T_{\infty}(n) = n^{\log_2{3}} = n^{1.58}$
+
+$\therefore$ Parallelism = $\dfrac{n^2}{n^{1.58}} = n^{0.42}$
+
+Space usage is $O(n^2)$.
+
+\subsection{Boundary Generation parallel LCS algorithm}
+
+The best running time we got was for a base case of a block of size $FIXME$ elements.
+
+Running the code:
+\begin{verbatim}
+$ e/a.out [base case size (this is a power of 2 - default: 16)] < input_file_path
+\end{verbatim}
+
+\subsection{Parallelism and space usage of the Boundary Generation parallel LCS algorithm}
+
+$T_{\infty}(n) = \log{1}Q(\frac{n}{q}) + \log{2}Q(\frac{n}{q}) + \log{3}Q(\frac{n}{q}) + \log{4}Q(\frac{n}{q}) + \ldots{} + \log{\frac{n}{q}}Q(\frac{n}{q})$
+
+But, $Q(m) = m^{\log_2{3}}$, which is the time to solve a problem of size $m$ using the Divide \& Conquer algorithm.
+
+$\therefore T_{\infty}(n) = Q(\dfrac{n}{q})q\log{(q+1)}$
+
+$\Rightarrow T_{\infty}(n) = q\log{(q+1)}\left(\dfrac{n}{q}\right)^{\log_2{3}}$
+
+$\therefore$ Parallelism = $\dfrac{n^2}{q\log{(q+1)}(\frac{n}{q})^{\log_2{3}}} = \dfrac{n^2}{q\log{(q+1)}(\frac{n}{q})^{\log_2{3}}}$
+
+Space usage is $O(n^2)$.
+
+\subsection{Limit on $n$, \texttt{PAPI} for number of L1 cache misses for the parallel \& serial implementation}
+
+
 \clearpage
 
 \section{Pairwise Alignment for Highly Uneven Sequence Lengths}
