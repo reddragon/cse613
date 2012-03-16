@@ -27,6 +27,8 @@ int main(int argc, char *argv[]) {
         nworkers = atoi(argv[1]);
     }
 
+    user_input();
+
     base_dimension = 16;
     if (argc > 2) {
         base_dimension = atoi(argv[2]);
@@ -37,7 +39,6 @@ int main(int argc, char *argv[]) {
 
     // printf("Worker Count: %d\n", nworkers);
 
-    user_input();
     int answer = solve(X, Y, len, nworkers);
     printf("%d\n", answer);
 
