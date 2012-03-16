@@ -10,7 +10,7 @@ b.out: b/main.cpp include/common.hpp
 	$(CILKXX) -o b.out b/main.cpp -O2 $(CFLAGS)
 
 c.out: c/main.cpp include/common.hpp
-	$(CXX) -o c.out c/main.cpp -O2 $(CFLAGS)
+	$(CILKXX) -o c.out c/main.cpp -O2 $(CFLAGS)
 
 e.out: e/main.cpp include/common.hpp
 	$(CILKXX) -o e.out e/main.cpp -O2 $(CFLAGS)
