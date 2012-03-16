@@ -7,6 +7,9 @@
 #include <malloc.h>
 #include <assert.h>
 
+#if defined __cilkplusplus
+#include <cilk.h>
+#endif
 
 #define GI     2
 #define GE     1

@@ -3,10 +3,6 @@
 #include <assert.h>
 #include "../include/common.hpp"
 
-#if defined __cilkplusplus
-#include <cilk.h>
-#endif
-
 int len = -1;
 char *X, *Y;
 int **G, **D, **I;
