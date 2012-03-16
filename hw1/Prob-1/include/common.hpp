@@ -13,7 +13,7 @@
 #define S(X,Y) ((X==Y) ? 0 : 1)
 
 // Dimension for base case of recursive solution.
-#define BASE_DIM 1
+int base_dimension = 1;
 
 #if defined __cilkplusplus
 #define main cilk_main
@@ -126,7 +126,7 @@ int agc_naive(char *s1, char *s2, int r1, int r2, int c1, int c2) {
 }
 
 int agc_dnc(char *s1, char *s2, int r1, int r2, int c1, int c2) {
-    if (r2 - r1 + 1 <= BASE_DIM) {
+    if (r2 - r1 + 1 <= base_dimension) {
         return agc_naive(s1, s2, r1, r2, c1, c2);
     }
     /* 

@@ -125,7 +125,7 @@ void reconstruct_path() {
     std::reverse(s.begin(), s.end());
     std::string a, b;
     int ai = 0, bi = 0;
-    for(int i = 0; i < s.size(); i++) {
+    for(size_t i = 0; i < s.size(); i++) {
         if(s[i].first == ai && s[i].second == bi) 
             continue;
 
