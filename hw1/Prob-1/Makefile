@@ -2,8 +2,9 @@ XFLAGS    := $(CXXFLAGS) -Wall -O2
 CXXFLAGS  := $(XFLAGS)
 CILKFLAGS := $(XFLAGS)
 CILKXX    := cilk++
+PAPIFLAGS := /opt/apps/papi/4.1.2.1/lib/libpapi.a -I /opt/apps/papi/4.1.2.1/include/ -DWITH_PAPI -lpapi
 
-ifeq ($(CILKXX), 'cilk++')
+ifeq ($(CILKXX), cilk++)
 	CILKFLAGS := $(XFLAGS) -lcilkutil
 endif
 
@@ -20,6 +21,9 @@ c.out: c/main.cpp include/common.hpp
 
 e.out: e/main.cpp include/common.hpp
 	$(CILKXX) -o e/a.out e/main.cpp $(CILKFLAGS)
+
+fa.out: a/main.cpp include/common.hpp
+	$(CXX) -o f/a.out a/main.cpp $(CXXFLAGS) $(PAPIFLAGS)
 
 check.out: check/main.cpp
 	g++ -o check.out check/main.cpp $(CXXFLAGS)
