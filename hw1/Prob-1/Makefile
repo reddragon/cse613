@@ -1,6 +1,6 @@
 XFLAGS := $(CXXFLAGS) -Wall -O2
 CILKFLAGS := $(XFLAGS) -lcilkutil
-CXXFLAGS := $(XFLAGS) -Wno-unused-result
+CXXFLAGS := $(XFLAGS) 
 CILKXX := cilk++
 
 all: a.out b.out c.out e.out check.out
