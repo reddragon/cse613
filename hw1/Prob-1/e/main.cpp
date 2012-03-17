@@ -44,7 +44,18 @@ int main(int argc, char *argv[]) {
 
     // printf("Worker Count: %d\n", nworkers);
 
+#if defined CILKVIEWPLOT
+    cilk::cilkview cv;
+    cv.start();
+#endif // CILKVIEWPLOT
+
     int answer = solve(X, Y, len, nworkers);
+
+#if defined CILKVIEWPLOT
+    cv.stop();
+    cv.dump("agc");
+#endif // CILKVIEWPLOT
+
     printf("%d\n", answer);
 
     std::pair<std::string, std::string> rc = reconstruct(X-1, Y-1, len);
