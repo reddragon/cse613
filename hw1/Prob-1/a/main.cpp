@@ -10,7 +10,7 @@
 #ifdef WITH_PAPI
 #include <papi.h>
 #define NUM_EVENTS 2
-#define ERROR_RETURN(retval) { fprintf(stderr, "Error %d %s:line %d: \n", retval,__FILE__,__LINE__);  exit(retval); }
+#define ERROR_RETURN(rv) { fprintf(stderr, "Error %d %s:line %d: \n", rv,__FILE__,__LINE__);  exit(rv); }
 #endif
 
 int n;
@@ -173,6 +173,11 @@ int main() {
     std::cout << sizeof(D) << std::endl; 
     
     #ifdef WITH_PAPI
+    int EventSet = PAPI_NULL;
+    int retval;
+	char errstring[PAPI_MAX_STR_LEN];
+	long long values[NUM_EVENTS];
+
     if((retval = PAPI_library_init(PAPI_VER_CURRENT)) != PAPI_VER_CURRENT )
 	{
         fprintf(stderr, "Error: %s\n", errstring);
@@ -245,7 +250,7 @@ int main() {
     if ( (retval=PAPI_stop(EventSet,values)) != PAPI_OK)
         ERROR_RETURN(retval);
     
-    std::cout << "L1 Misses: " << values[0] << " L2 Misses: " << values[1] << endl;
+    std::cout << "L1 Misses: " << values[0] << " L2 Misses: " << values[1] << std::endl;
     /*
     double tot_access = 4 * n * n *n;
     double miss_ratio = values[0] / tot_access;
