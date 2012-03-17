@@ -1,7 +1,11 @@
-XFLAGS := $(CXXFLAGS) -Wall -O2
-CILKFLAGS := $(XFLAGS) -lcilkutil
-CXXFLAGS := $(XFLAGS) 
-CILKXX := cilk++
+XFLAGS    := $(CXXFLAGS) -Wall -O2
+CXXFLAGS  := $(XFLAGS)
+CILKFLAGS := $(XFLAGS)
+CILKXX    := cilk++
+
+ifeq ($(CILKXX), 'cilk++')
+	CILKFLAGS := $(XFLAGS) -lcilkutil
+endif
 
 all: a.out b.out c.out e.out check.out
 
