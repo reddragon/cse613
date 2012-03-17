@@ -3,7 +3,7 @@ CXXFLAGS  := $(XFLAGS)
 CILKFLAGS := $(XFLAGS)
 CILKXX    := cilk++
 
-ifeq ($(CILKXX), 'cilk++')
+ifeq ($(CILKXX), cilk++)
 	CILKFLAGS := $(XFLAGS) -lcilkutil
 endif
 
