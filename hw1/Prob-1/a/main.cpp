@@ -260,6 +260,9 @@ int main() {
     if ( (retval=PAPI_remove_event(EventSet,PAPI_L1_DCM))!=PAPI_OK)
         ERROR_RETURN(retval);
   
+    if ( (retval=PAPI_remove_event(EventSet,PAPI_L2_DCM))!=PAPI_OK)
+        ERROR_RETURN(retval);
+
     /* Free all memory and data structures, EventSet must be empty. */
     if ( (retval=PAPI_destroy_eventset(&EventSet)) != PAPI_OK)
         ERROR_RETURN(retval);
