@@ -28,8 +28,8 @@ int main(int argc, char *argv[]) {
         nworkers = atoi(argv[1]);
     }
 
-    if (argc > 2) {
-        freopen(argv[2], "r", stdin);
+    if (argc > 3) {
+        freopen(argv[3], "r", stdin);
     }
 
     user_input();
