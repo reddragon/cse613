@@ -104,7 +104,29 @@ $\therefore$ Parallelism = $\dfrac{n^2}{q\log{(q+1)}(\frac{n}{q})^{\log_2{3}}} =
 
 Space usage is $O(n^2)$.
 
+\subsection{Limit on $n$ and Cilkview scalability plots}
+
+The limit on $n$ we experimentally determined happens to be ${n'}_{max} = 32768$.
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=4in]{images/agc-partc.png}
+    \caption{Cilkview plot for part(c) - Divide \& Conquer solution}
+    \label{fig:cilkview_c}
+  \end{center}
+\end {figure}
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=4in]{images/agc-parte.png}
+    \caption{Cilkview plot for part(e) - Cache Efficient blocking-based diagonal solution}
+    \label{fig:cilkview_e}
+  \end{center}
+\end {figure}
+
+
 \subsection{Limit on $n$, \texttt{PAPI} for number of L1 cache misses for the parallel \& serial implementation}
+
 
 
 \clearpage
