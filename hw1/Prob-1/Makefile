@@ -2,7 +2,7 @@ XFLAGS    := $(CXXFLAGS) -Wall -O2
 CXXFLAGS  := $(XFLAGS)
 CILKFLAGS := $(XFLAGS)
 CILKXX    := cilk++
-PAPIFLAGS := /opt/apps/papi/4.1.2.1/lib/libpapi.a -I /opt/apps/papi/4.1.2.1/include/ -DWITH_PAPI -lpapi
+PAPIFLAGS := /opt/apps/papi/4.1.2.1/lib/libpapi.a -I /opt/apps/papi/4.1.2.1/include/ -DWITH_PAPI
 
 ifeq ($(CILKXX), cilk++)
 	CILKFLAGS := $(XFLAGS) -lcilkutil
