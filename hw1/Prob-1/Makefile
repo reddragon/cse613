@@ -23,7 +23,10 @@ e.out: e/main.cpp include/common.hpp
 	$(CILKXX) -o e/a.out e/main.cpp $(CILKFLAGS)
 
 fa.out: a/main.cpp include/common.hpp
-	$(CXX) -o f/a.out a/main.cpp $(CXXFLAGS) $(PAPIFLAGS)
+	$(CXX) -o f/fa.out a/main.cpp $(CXXFLAGS) $(PAPIFLAGS)
+
+fc.out: c/main.cpp include/common.hpp
+	$(CXX) -o f/fc.out c/main.cpp $(CXXFLAGS) $(PAPIFLAGS)
 
 check.out: check/main.cpp
 	g++ -o check.out check/main.cpp $(CXXFLAGS)
