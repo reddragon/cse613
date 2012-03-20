@@ -108,7 +108,7 @@ Space usage is $O(n^2)$.
 
 The limit on $n$ we experimentally determined happens to be ${n'}_{max} = 32768$.
 
-\begin{figure}
+\begin{figure}[h!]
   \begin{center}
     \includegraphics[width=4in]{images/agc-partc.png}
     \caption{Cilkview plot for part(c) - Divide \& Conquer solution}
@@ -116,7 +116,7 @@ The limit on $n$ we experimentally determined happens to be ${n'}_{max} = 32768$
   \end{center}
 \end {figure}
 
-\begin{figure}
+\begin{figure}[h!]
   \begin{center}
     \includegraphics[width=4in]{images/agc-parte.png}
     \caption{Cilkview plot for part(e) - Cache Efficient blocking-based diagonal solution}
@@ -177,6 +177,14 @@ The algorithm to compute the edit distance for highly uneven sequences is descri
 \item We do this for each of the $m$ rows in the matrix.
 
 \end{enumerate}
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=6in]{images/edit_diatance_using_parallel_prefix_small.png}
+    \caption{Parallel Edit Distance using Parallel Prefix}
+    \label{fig:pareditdistance}
+  \end{center}
+\end{figure}
 
 $T_1 = O(mn)$
 
