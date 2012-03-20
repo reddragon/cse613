@@ -141,6 +141,62 @@ as compared to part (a), which has better data locality.
 
 \section{Pairwise Alignment for Highly Uneven Sequence Lengths}
 
+\subsection{Parallelism of diagonal parallel solution for highly uneven sequences}
+
+If $m \ll n$ and $m \ll p$, then the parallel running time of the earlier algorithm on the uneven sequences would be:
+
+$T_{\infty} = O(n\log{m})$
+
+The serial running time, $T_1 = O(nm)$
+
+$\therefore$ Parallelism $= \dfrac{nm}{n\log{m}} = \dfrac{m}{\log{m}}$
+
+\subsection{Optimized Parallel Algorithm for solving highly uneven sequences}
+
+The algorithm to compute the edit distance for highly uneven sequences is described below:
+
+\begin{enumerate}
+
+\item We lay out the matrix so that it has $m$ rows and $n$ columns.
+
+\item We first compute (for the first row), the value in each cell
+  depending on the corresponding cell in the previous row and the
+  diagonally opposite cell in the previous row. We do NOT us the value
+  in the previous cell in the SAME row. Work: $O(n)$, depth: $O(\log{n})$
+
+\item Now, we compute costs for each cell assuming that an INSERT GAP
+  started at that cell. This can be done using a parallel for-loop
+  with work $O(n)$ and depth $O(\log{n})$.
+
+\item Now, for each cell (at index $k$), we take the minimum value in
+  each cell before it and subtract from that value the number
+  $(n-k)$. This will give us the value in that cell. This can be done
+  using $O(n)$ work, and $O(\log{n})$ depth since we can pre-compute
+  the value for each range from $[0 \ldots{} k]$.
+
+\item We do this for each of the $m$ rows in the matrix.
+
+\end{enumerate}
+
+$T_1 = O(mn)$
+
+$T_{\infty} = O(m\log{n})$
+
+$\therefore$ Parallelism $= \dfrac{mn}{m\log{n}} = \dfrac{n}{\log{n}} \gg \dfrac{m}{\log{m}}$ for $m \ll n$.
+
+\subsection{Extending the algorithm to solve Part-1}
+
+The algorithm can easily be extended to solve Part-1 since we can add
+the value $g_i$ every time we start a gap at a certain index.
+
+$T_1 = O(n^2)$
+
+$T_{\infty} = O(n\log{n})$
+
+$\therefore$ Parallelism $= \dfrac{n^2}{n\log{n}} = \dfrac{n}{\log{n}}$.
+
+We get the same parallelism as Part-1 (f) if we set $q = n$.
+
 \clearpage
 
 \section{Randomized Parallel Quicksort with Looping}
