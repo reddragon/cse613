@@ -92,7 +92,7 @@ $ e/a.out [base case size (this is a power of 2 - default: 16)] < input_file_pat
 
 \subsection{Parallelism and space usage of the Boundary Generation parallel LCS algorithm}
 
-$T_{\infty}(n) = \log{1}Q(\frac{n}{q}) + \log{2}Q(\frac{n}{q}) + \log{3}Q(\frac{n}{q}) + \log{4}Q(\frac{n}{q}) + \ldots{} + \log{\frac{n}{q}}Q(\frac{n}{q})$
+$T_{\infty}(n) = Q(\frac{n}{q})\log{1} + Q(\frac{n}{q})\log{2} + Q(\frac{n}{q})\log{3} + Q(\frac{n}{q})\log{4} + \ldots{} + Q(\frac{n}{q})\log{\frac{n}{q}}$
 
 But, $Q(m) = m^{\log_2{3}}$, which is the time to solve a problem of size $m$ using the Divide \& Conquer algorithm.
 
