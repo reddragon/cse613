@@ -135,7 +135,8 @@ L1 Misses: 692573496\\
 L2 Misses: 364397656\\
 \\
 There are more cache misses in part (c) because, there is no data locality
-as compared to part (a), which has better data locality.
+as compared to part (a), which has better data locality. If we used a
+recursive layout, we might get fewer cache misses.
 
 \clearpage
 
@@ -171,8 +172,11 @@ The algorithm to compute the edit distance for highly uneven sequences is descri
 \item Now, for each cell (at index $k$), we take the minimum value in
   each cell before it and subtract from that value the number
   $(n-k)$. This will give us the value in that cell. This can be done
-  using $O(n)$ work, and $O(\log{n})$ depth since we can pre-compute
-  the value for each range from $[0 \ldots{} k]$.
+  using $O(n)$ work, and $O(\log^2{n})$ depth\footnote{In the PRAM
+    model, we can do this in $O(\log{n})$ depth. That would shave off
+    a \texttt{log} factor in our analysis and give us parallelism that
+    is a \texttt{log} factor better} since we can pre-compute the
+  value for each range from $[0 \ldots{} k]$.
 
 \item We do this for each of the $m$ rows in the matrix.
 
@@ -188,9 +192,9 @@ The algorithm to compute the edit distance for highly uneven sequences is descri
 
 $T_1 = O(mn)$
 
-$T_{\infty} = O(m\log{n})$
+$T_{\infty} = O(m\log^2{n})$
 
-$\therefore$ Parallelism $= \dfrac{mn}{m\log{n}} = \dfrac{n}{\log{n}} \gg \dfrac{m}{\log{m}}$ for $m \ll n$.
+$\therefore$ Parallelism $= \dfrac{mn}{m\log^2{n}} = \dfrac{n}{\log^2{n}} \gg \dfrac{m}{\log{m}}$ for $m \ll n$.
 
 \subsection{Extending the algorithm to solve Part-1}
 
@@ -199,11 +203,9 @@ the value $g_i$ every time we start a gap at a certain index.
 
 $T_1 = O(n^2)$
 
-$T_{\infty} = O(n\log{n})$
+$T_{\infty} = O(n\log^2{n})$
 
-$\therefore$ Parallelism $= \dfrac{n^2}{n\log{n}} = \dfrac{n}{\log{n}}$.
-
-We get the same parallelism as Part-1 (f) if we set $q = n$.
+$\therefore$ Parallelism $= \dfrac{n^2}{n\log^2{n}} = \dfrac{n}{\log^2{n}}$.
 
 \clearpage
 
@@ -294,8 +296,13 @@ $\le \dfrac{1}{n^{20.36}} \le \dfrac{1}{n^{2}}$
 \subsection{Proof of depth and work with high probability}
 
 In part $(3.3)$ above, we showed that a randomly chosen element
-doesn't feature is more than $32\ln{n}$ calls to
+doesn't feature in more than $32\ln{n}$ calls to
 \texttt{PAR-PARTITION} with high probability.
+
+$\therefore$ The probability that any element features in more
+than $32\ln{n}$ calls to \texttt{PAR-PARTITION} is $\le
+\dfrac{1}{n^{19}}$. Therefore, with high probability, no element
+features in more than $32\ln{n}$ calls to \texttt{PAR-PARTITION}.
 
 Hence, the depth and work of \texttt{PAR-PARTITION} is $O(\ln^2{n})$
 and $O(n)$ respectively with high probability.
