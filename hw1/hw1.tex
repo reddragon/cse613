@@ -6,6 +6,7 @@
 \usepackage{url}
 \usepackage{color}
 \usepackage{savetrees}
+\usepackage{listings}
 % \usetikzlibrary{shapes}
 
 
@@ -154,7 +155,23 @@ $\therefore$ Parallelism $= \dfrac{nm}{n\log{m}} = \dfrac{m}{\log{m}}$
 
 \subsection{Optimized Parallel Algorithm for solving highly uneven sequences}
 
-The algorithm to compute the edit distance for highly uneven sequences is described below:
+\textit{Basic Game Plan:} Since the value in each cell depends on
+(aprat from other things) the value in the cell just before it in the
+same row, we can not peform a trivial parallelization. We somehow need
+to overcome this data dependency.
+
+To do so, we shall think of the algoithm as a brute-force algorithm
+that computes the best cost at a cell $M_{(i,j)}$ by considering the
+values as $M_{(i-1,j-1)}$, $M_{(i-1,j)}$ and also assuming that a gap
+starts at \textit{every} cell before it. We can then take the minimum
+over all these to get the value at a cell.
+
+We notice that we need not perform $O(n)$ work for every cell, but we
+can amortize this work for every cell to get an $O(1)$
+\textit{amortized} work algorithm to update each cell.
+
+The algorithm to compute the edit distance for highly uneven sequences
+is detailed below:
 
 \begin{enumerate}
 
@@ -190,6 +207,12 @@ The algorithm to compute the edit distance for highly uneven sequences is descri
   \end{center}
 \end{figure}
 
+\clearpage
+
+\lstset{ language=C++, caption=Optimized parallel Edit Distance
+  Computation (serial code) }
+\lstinputlisting{Prob-2/snippet.cpp}
+
 $T_1 = O(mn)$
 
 $T_{\infty} = O(m\log^2{n})$
@@ -200,6 +223,10 @@ $\therefore$ Parallelism $= \dfrac{mn}{m\log^2{n}} = \dfrac{n}{\log^2{n}} \gg \d
 
 The algorithm can easily be extended to solve Part-1 since we can add
 the value $g_i$ every time we start a gap at a certain index.
+
+We do this by maintaining 2 arrays, $G$ \& $D$. The $I$ array need not
+be maintained since we are computing those values for every cell
+afresh.
 
 $T_1 = O(n^2)$
 
