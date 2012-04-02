@@ -7,6 +7,8 @@
 #include <assert.h>
 #include <math.h>
 #include <cilk.h>
+#include <reducer_max.h>
+#include <reducer_opadd.h>
 #include <cilk_mutex.h>
 
 using namespace std;
@@ -14,7 +16,7 @@ using namespace std;
 typedef map<int, int> matrix_1d_t;
 typedef vector<matrix_1d_t> matrix_2d_t;
 
-#define cfor for
+#define cfor cilk_for
 
 struct node_pair {
     int p, u;
@@ -230,19 +232,22 @@ parallel_bfs(int s) {
         QinStart.resize(p, 0);
         // fprintf(stderr, "QminNonEmpty: %d, Qin.size(): %d\n", QminNonEmpty, Qin.size());
     }
-    // TODO make parallel
-    for (int i = 0; i < (int)pmax.size(); ++i) {
-        dmax = std::max(dmax, pmax[i]);
+
+    cilk::reducer_max<int> rmax(0);
+    int sz = (int)pmax.size();
+    cfor (int i = 0; i < sz; ++i) {
+        rmax = cilk::max_of(rmax, pmax[i]);
     }
+    dmax = rmax.get_value();
 }
 
 unsigned long long
 checksum_serial() {
-    unsigned long long c = 0;
-    for (int i = 1; i < n+1; ++i) {
-        c += d[i] != infinity ? d[i] : n;
+    cilk::reducer_opadd< unsigned long long > chksum;
+    cilk_for(int i = 1; i < n+1; i++) {
+        chksum += d[i] != infinity ? d[i] : n;
     }
-    return c;
+    return chksum.get_value( );
 }
 
 int
