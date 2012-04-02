@@ -43,8 +43,8 @@ struct graph_t {
 
     void
     add_edge(int u, int v) {
-        assert(u < this->impl.size());
-        assert(v < this->impl.size());
+        assert(u < (int)this->impl.size());
+        assert(v < (int)this->impl.size());
 
         this->impl[u][v] = 1;
     }
@@ -64,6 +64,8 @@ vi_t d, sources;
 int n, m, r;
 int p; // # of processing cores
 vvnp_t Qin, Qout;
+int dmax;
+vi_t pmax;
 
 // Each entry of QinStart[i] is an index of the first un-processed
 // element of the queue at Qin[i].
@@ -114,8 +116,8 @@ next_segment(int size) {
     ns_mutex.lock();
 
     int i;
-    for (i = QminNonEmpty; i < QinStart.size(); ++i) {
-        if (QinStart[i] < Qin[i].size()) {
+    for (i = QminNonEmpty; i < (int)QinStart.size(); ++i) {
+        if (QinStart[i] < (int)Qin[i].size()) {
             int m = Qin[i].size() - QinStart[i];
             m = std::min(size, m);
             seg.q = &(Qin[i]);
@@ -139,17 +141,18 @@ parallel_bfs_thread(int k, int size) {
         while (seg.i != seg.j) {
             node_pair np = (*seg.q)[seg.i++];
             int u = np.u;
-            int p = np.p;
 
 #if defined PARTD
+            int p = np.p;
             if (parent[u] == p) {
 #endif
 
                 for (matrix_1d_t::iterator i = graph.impl[u].begin(); 
                      i != graph.impl[u].end(); ++i) {
-                    int v = i->second;
+                    int v = i->first;
                     if (d[v] == infinity) {
                         d[v] = d[u] + 1;
+                        pmax[k] = std::max(pmax[k], d[v]);
                         Qout[k].push_back(node_pair(u, v));
 #if defined PARTD
                         parent[v] = u;
@@ -167,7 +170,7 @@ parallel_bfs_thread(int k, int size) {
 int
 sizeofQin() {
     int sz = 0;
-    for (int i = 0; i < Qin.size(); ++i) {
+    for (int i = 0; i < (int)Qin.size(); ++i) {
         sz += Qin[i].size();
     }
     return sz;
@@ -178,10 +181,12 @@ parallel_bfs(int s) {
     d.clear();
     d.resize(n + 1, infinity);
     d[s] = 0;
+    dmax = 0;
 
     Qin.clear();
     Qout.clear();
     QinStart.clear();
+    pmax.resize(p, 0);
 
 #if defined PARTD
     parent.clear();
@@ -200,7 +205,7 @@ parallel_bfs(int s) {
     Qin[0].push_back(node_pair(-1, s));
     int nseg = p; // TODO - FIXME
 
-    while (QminNonEmpty < Qin.size()) {
+    while (QminNonEmpty < (int)Qin.size()) {
         int size = ceil(sizeofQin() / nseg);
         if (!size) {
             break;
@@ -214,14 +219,17 @@ parallel_bfs(int s) {
         QinStart.clear();
         QinStart.resize(p, 0);
     }
-
+    // TODO make parallel
+    for (int i = 0; i < (int)pmax.size(); ++i) {
+        dmax = std::max(dmax, pmax[i]);
+    }
 }
 
 unsigned long long
 checksum_serial() {
     unsigned long long c = 0;
     for (int i = 1; i < n+1; ++i) {
-        c += d[i];
+        c += d[i] != infinity ? d[i] : n;
     }
     return c;
 }
@@ -233,6 +241,6 @@ cilk_main() {
     for (int i = 0; i < r; ++i) {
         parallel_bfs(sources[i]);
         unsigned long long c = checksum_serial();
-        cout<<c<<"\n";
+        cout<<dmax<<" "<<c<<"\n";
     }
 }
