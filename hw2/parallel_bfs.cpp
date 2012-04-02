@@ -139,6 +139,7 @@ parallel_bfs_thread(int k, int size) {
     segment_t seg = next_segment(size);
     while (seg.q) {
         while (seg.i != seg.j) {
+            // fprintf(stderr, "seg.i: %d, seg.j: %d\n", seg.i, seg.j);
             node_pair np = (*seg.q)[seg.i++];
             int u = np.u;
 
@@ -150,6 +151,9 @@ parallel_bfs_thread(int k, int size) {
                 for (matrix_1d_t::iterator i = graph.impl[u].begin(); 
                      i != graph.impl[u].end(); ++i) {
                     int v = i->first;
+                    // assert(false);
+                    // fprintf(stderr, "processing edge (%d, %d), d[%d] = %d, d[%d] = %d\n", u, v, u, d[u], v, d[v]);
+
                     if (d[v] == infinity) {
                         d[v] = d[u] + 1;
                         pmax[k] = std::max(pmax[k], d[v]);
@@ -178,6 +182,7 @@ sizeofQin() {
 
 void
 parallel_bfs(int s) {
+    // fprintf(stderr, "n: %d, m: %d, r: %d, p: %d\n", n, m, r, p);
     d.clear();
     d.resize(n + 1, infinity);
     d[s] = 0;
@@ -186,7 +191,7 @@ parallel_bfs(int s) {
     Qin.clear();
     Qout.clear();
     QinStart.clear();
-    pmax.resize(p, 0);
+    pmax.clear();
 
 #if defined PARTD
     parent.clear();
@@ -197,6 +202,7 @@ parallel_bfs(int s) {
     Qin.resize(p);
     Qout.resize(p);
     QinStart.resize(p, 0);
+    pmax.resize(p, 0);
 
     QminNonEmpty = 0;
 
@@ -205,8 +211,10 @@ parallel_bfs(int s) {
     Qin[0].push_back(node_pair(-1, s));
     int nseg = p; // TODO - FIXME
 
+    // fprintf(stderr, "QminNonEmpty: %d, Qin.size(): %d\n", QminNonEmpty, Qin.size());
     while (QminNonEmpty < (int)Qin.size()) {
-        int size = ceil(sizeofQin() / nseg);
+        int size = ceil((double)sizeofQin() / nseg);
+        // fprintf(stderr, "size: %d\n", size);
         if (!size) {
             break;
         }
@@ -216,8 +224,11 @@ parallel_bfs(int s) {
         }
         Qin.swap(Qout);
         QminNonEmpty = 0;
+        Qout.clear();
+        Qout.resize(p);
         QinStart.clear();
         QinStart.resize(p, 0);
+        // fprintf(stderr, "QminNonEmpty: %d, Qin.size(): %d\n", QminNonEmpty, Qin.size());
     }
     // TODO make parallel
     for (int i = 0; i < (int)pmax.size(); ++i) {
