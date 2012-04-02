@@ -83,6 +83,7 @@ vi_t parent;
 
 void
 initialize() {
+    p = cilk::current_worker_count();
 }
 
 void
@@ -227,6 +228,7 @@ checksum_serial() {
 
 int
 cilk_main() {
+    initialize();
     read_input();
     for (int i = 0; i < r; ++i) {
         parallel_bfs(sources[i]);
