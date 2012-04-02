@@ -93,6 +93,6 @@ main() {
     for (int i = 0; i < r; ++i) {
         serial_bfs(sources[i]);
         unsigned long long c = checksum_serial();
-        cout<<d[sources[i]]<<' 'c<<"\n";
+        cout<<d[sources[i]]<<" "<<c<<"\n";
     }
 }
