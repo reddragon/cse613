@@ -35,6 +35,7 @@ graph_t graph;
 vector<int> d, sources;
 int n, m, r;
 int infinity = -1;
+int dmax;
 
 void
 read_input() {
@@ -62,6 +63,7 @@ serial_bfs(int s) {
     d.clear();
     d.resize(n + 1, infinity);
     d[s] = 0;
+    dmax = 0;
     queue<int> q;
     q.push(s);
     while (!q.empty()) {
@@ -69,9 +71,11 @@ serial_bfs(int s) {
         q.pop();
         for (matrix_1d_t::iterator i = graph.impl[u].begin(); 
              i != graph.impl[u].end(); ++i) {
-            int v = i->second;
+            int v = i->first;
+            // fprintf(stderr, "processing edge (%d, %d), d[%d] = %d, d[%d] = %d\n", u, v, u, d[u], v, d[v]);
             if (d[v] == infinity) {
                 d[v] = d[u] + 1;
+                dmax = std::max(dmax, d[v]);
                 q.push(v);
             }
         }
@@ -82,7 +86,7 @@ unsigned long long
 checksum_serial() {
     unsigned long long c = 0;
     for (int i = 1; i < n+1; ++i) {
-        c += d[i];
+        c += d[i] != infinity ? d[i] : n;
     }
     return c;
 }
@@ -93,6 +97,6 @@ main() {
     for (int i = 0; i < r; ++i) {
         serial_bfs(sources[i]);
         unsigned long long c = checksum_serial();
-        cout<<d[sources[i]]<<" "<<c<<"\n";
+        cout<<dmax<<" "<<c<<"\n";
     }
 }
