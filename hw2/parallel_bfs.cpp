@@ -16,6 +16,19 @@ typedef vector<matrix_1d_t> matrix_2d_t;
 
 #define cfor for
 
+struct node_pair {
+    int p, u;
+    node_pair(int P = -1, int U = -1)
+        : p(P), u(U)
+    { }
+};
+
+typedef vector<int> vi_t;
+typedef vector<vi_t> vvi_t;
+typedef vector<node_pair> vnp_t;
+typedef vector<vnp_t> vvnp_t;
+
+
 struct graph_t {
     matrix_2d_t impl;
 
@@ -38,33 +51,34 @@ struct graph_t {
 };
 
 struct segment_t {
-    std::vector<int> *q;
+    vnp_t *q;
     int i, j;
 
-    segment_t(std::vector<int> *Q, int I, int J)
+    segment_t(vnp_t *Q, int I, int J)
         : q(Q), i(I), j(J)
     { }
 };
 
-
-typedef vector<int> vi_t;
-typedef vector<vi_t> vvi_t;
 graph_t graph;
-vector<int> d, sources;
+vi_t d, sources;
 int n, m, r;
 int p; // # of processing cores
-vvi_t Qin, Qout;
+vvnp_t Qin, Qout;
 
 // Each entry of QinStart[i] is an index of the first un-processed
 // element of the queue at Qin[i].
 vi_t QinStart;
 
-// The first index 'i' in Qin where Qin[i] is non-empty (or 1 index
+// The first index 'i' in Qin where Qin[i] is non-empty (or one index
 // before it).
 int QminNonEmpty = 0;
 
 int infinity = -1;
 cilk::mutex ns_mutex;
+
+#if defined PARTD
+vi_t parent;
+#endif
 
 
 void
@@ -103,7 +117,7 @@ next_segment(int size) {
         if (QinStart[i] < Qin[i].size()) {
             int m = Qin[i].size() - QinStart[i];
             m = std::min(size, m);
-            seg.q = &Qin[i];
+            seg.q = &(Qin[i]);
             seg.i = QinStart[i];
             seg.j = seg.i + m;
             QinStart[i] += m;
@@ -122,15 +136,28 @@ parallel_bfs_thread(int k, int size) {
     segment_t seg = next_segment(size);
     while (seg.q) {
         while (seg.i != seg.j) {
-            int u = (*seg.q)[seg.i++];
-            for (matrix_1d_t::iterator i = graph.impl[u].begin(); 
-                 i != graph.impl[u].end(); ++i) {
-                int v = i->second;
-                if (d[v] == infinity) {
-                    d[v] = d[u] + 1;
-                    Qout[k].push_back(v);
+            node_pair np = (*seg.q)[seg.i++];
+            int u = np.u;
+            int p = np.p;
+
+#if defined PARTD
+            if (parent[u] == p) {
+#endif
+
+                for (matrix_1d_t::iterator i = graph.impl[u].begin(); 
+                     i != graph.impl[u].end(); ++i) {
+                    int v = i->second;
+                    if (d[v] == infinity) {
+                        d[v] = d[u] + 1;
+                        Qout[k].push_back(node_pair(u, v));
+#if defined PARTD
+                        parent[v] = u;
+#endif
+                    }
                 }
+#if defined PARTD
             }
+#endif
         }
         seg = next_segment(size);
     }
@@ -155,6 +182,12 @@ parallel_bfs(int s) {
     Qout.clear();
     QinStart.clear();
 
+#if defined PARTD
+    parent.clear();
+    parent.resize(n+1, -1);
+    parent[s] = -1;
+#endif
+
     Qin.resize(p);
     Qout.resize(p);
     QinStart.resize(p, 0);
@@ -163,7 +196,7 @@ parallel_bfs(int s) {
 
     assert(!Qin.empty());
 
-    Qin[0].push_back(s);
+    Qin[0].push_back(node_pair(-1, s));
     int nseg = p; // TODO - FIXME
 
     while (QminNonEmpty < Qin.size()) {
