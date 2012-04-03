@@ -1,18 +1,18 @@
-CXXFLAGS := $(CXXFLAGS) -O2 -Wall
+CXXFLAGS := $(FLAGS) -O2 -Wall
 
 all: serial parallel parallel_d parallel_h
 
 serial: serial_bfs.cpp
-	$(CXX) -o serial serial_bfs.cpp $(CXXFLAGS)
+	$(CXX) -o serial serial_bfs.cpp $(CXXFLAGS) -Wno-unused-result
 
 parallel: parallel_bfs.cpp
-	cilk++ -o parallel parallel_bfs.cpp $(CXXFLAGS)
+	cilk++ -o parallel parallel_bfs.cpp $(CXXFLAGS) $(CILKFLAGS) 
 
 parallel_d: parallel_bfs.cpp
-	cilk++ -o parallel_d parallel_bfs.cpp $(CXXFLAGS) -DPARTD
+	cilk++ -o parallel_d parallel_bfs.cpp $(CXXFLAGS) $(CILKFLAGS) -DPARTD
 
 parallel_h: parallel_bfs.cpp
-	cilk++ -o parallel_h parallel_bfs.cpp $(CXXFLAGS) -DPARTH
+	cilk++ -o parallel_h parallel_bfs.cpp $(CXXFLAGS) $(CILKFLAGS) -DPARTH
 
 clean:
 	rm -f serial parallel parallel_d parallel_h

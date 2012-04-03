@@ -16,9 +16,10 @@ using namespace std;
 typedef map<int, int> matrix_1d_t;
 typedef vector<matrix_1d_t> matrix_2d_t;
 
-#define cfor cilk_for
-#define MAX_STEAL_ATTEMPTS (2*p)
+#define cfor                cilk_for
+#define MAX_STEAL_ATTEMPTS  (2*p)
 #define MIN_STEALABLE_QSIZE 32
+#define QOUT_MIN_CAPACITY   256
 
 struct node_pair {
     int p, u;
@@ -190,7 +191,7 @@ parallel_bfs_thread(int k, int) {
                 if (tmp.j - tmp.i >= MIN_STEALABLE_QSIZE) {
                     int mid = tmp.i + (tmp.j - tmp.i)/2;
 
-                    fprintf(stderr, "stole %d nodes from queue %d\n", (tmp.j - tmp.i)/2, rk);
+                    // fprintf(stderr, "stole %d nodes from queue %d\n", (tmp.j - tmp.i)/2, rk);
 
                     Qsegments[rk].j = mid + 1;
                     tmp.i = mid;
@@ -211,6 +212,17 @@ parallel_bfs_thread(int k, int) {
     } // while (true)
     QminNonEmpty = Qin.size();
 
+#if defined PARTF
+    double ratio = (double)Qout[k].size() / (double)Qout[k].capacity();
+    if (ratio < 0.25) {
+        vnp_t tmpQ;
+        int new_capacity = Qout[k].capacity() / 2;
+        new_capacity = new_capacity < QOUT_MIN_CAPACITY ? QOUT_MIN_CAPACITY : new_capacity;
+        tmpQ.reserve(new_capacity);
+        tmpQ.assign(Qout[k].begin(), Qout[k].end());
+        tmpQ.swap(Qout[k]);
+    }
+#endif
 }
 #else
 void
@@ -248,17 +260,28 @@ parallel_bfs_thread(int k, int size) {
         }
         seg = next_segment(size);
     }
+#if defined PARTF
+    double ratio = (double)Qout[k].size() / (double)Qout[k].capacity();
+    if (ratio < 0.25) {
+        vnp_t tmpQ;
+        int new_capacity = Qout[k].capacity() / 2;
+        new_capacity = new_capacity < QOUT_MIN_CAPACITY ? QOUT_MIN_CAPACITY : new_capacity;
+        tmpQ.reserve(new_capacity);
+        tmpQ.assign(Qout[k].begin(), Qout[k].end());
+        tmpQ.swap(Qout[k]);
+    }
+#endif
 }
 #endif
 
 int
 sizeofQin() {
-    // TODO - Use cilk_for with reducers
-    int sz = 0;
-    for (int i = 0; i < (int)Qin.size(); ++i) {
+    cilk::reducer_opadd<int> sz;
+    int j = (int)Qin.size();
+    cilk_for(int i = 0; i < j; i++) {
         sz += Qin[i].size();
     }
-    return sz;
+    return sz.get_value();
 }
 
 void
@@ -288,6 +311,12 @@ parallel_bfs(int s) {
     QminNonEmpty = 0;
 
     assert(!Qin.empty());
+
+#if defined PARTF
+    for (int i = 0; i < p; ++i) {
+        Qout[i].reserve(QOUT_MIN_CAPACITY);
+    }
+#endif
 
     Qin[0].push_back(node_pair(-1, s));
     int nseg = p; // TODO - FIXME

@@ -24,8 +24,8 @@ struct graph_t {
 
     void
     add_edge(int u, int v) {
-        assert(u < this->impl.size());
-        assert(v < this->impl.size());
+        assert(u < (int)this->impl.size());
+        assert(v < (int)this->impl.size());
 
         this->impl[u][v] = 1;
     }
