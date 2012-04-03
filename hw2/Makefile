@@ -14,5 +14,8 @@ parallel_d: parallel_bfs.cpp
 parallel_h: parallel_bfs.cpp
 	cilk++ -o parallel_h parallel_bfs.cpp $(CXXFLAGS) $(CILKFLAGS) -DPARTH
 
+pdf: hw2.tex
+	pdflatex hw2.tex
+
 clean:
 	rm -f serial parallel parallel_d parallel_h
