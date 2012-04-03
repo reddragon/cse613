@@ -17,7 +17,6 @@ typedef map<int, int> matrix_1d_t;
 typedef vector<matrix_1d_t> matrix_2d_t;
 
 #define cfor                cilk_for
-#define MAX_STEAL_ATTEMPTS  (2*p)
 #define MIN_STEALABLE_QSIZE 32
 #define QOUT_MIN_CAPACITY   256
 
@@ -73,6 +72,7 @@ int p; // # of processing cores
 vvnp_t Qin, Qout;
 int dmax;
 vi_t pmax;
+int max_steal_attempts = -1;
 
 // Each entry of QinStart[i] is an index of the first un-processed
 // element of the queue at Qin[i].
@@ -94,10 +94,19 @@ vector<cilk::mutex> QsegMutexes;
 vi_t parent;
 #endif
 
+int log2(int n) {
+    int lg2 = 0;
+    while (n > 1) {
+        n /= 2;
+        ++lg2;
+    }
+    return lg2;
+}
 
 void
 initialize() {
     p = cilk::current_worker_count();
+    max_steal_attempts = 10 * p * log2(p);
 }
 
 void
@@ -182,7 +191,7 @@ parallel_bfs_thread(int k, int) {
 
         segment_t tmp(NULL, 0, 0);
         int steal_attempts;
-        for (steal_attempts = 0; steal_attempts < MAX_STEAL_ATTEMPTS; ++steal_attempts) {
+        for (steal_attempts = 0; steal_attempts < max_steal_attempts; ++steal_attempts) {
             int rk = rand() % p;
             if (rk != k) {
                 QsegMutexes[rk].lock();
@@ -201,7 +210,7 @@ parallel_bfs_thread(int k, int) {
                 QsegMutexes[rk].unlock();
             }
         }
-        if (steal_attempts == MAX_STEAL_ATTEMPTS) {
+        if (steal_attempts == max_steal_attempts) {
             break;
         } else {
             QsegMutexes[k].lock();
