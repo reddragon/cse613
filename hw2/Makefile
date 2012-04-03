@@ -3,7 +3,7 @@ CXXFLAGS := $(FLAGS) -O2 -Wall
 all: serial parallel parallel_d parallel_h
 
 serial: serial_bfs.cpp
-	$(CXX) -o serial serial_bfs.cpp $(CXXFLAGS) -Wno-unused-result
+	$(CXX) -o serial serial_bfs.cpp $(CXXFLAGS)
 
 parallel: parallel_bfs.cpp
 	cilk++ -o parallel parallel_bfs.cpp $(CXXFLAGS) $(CILKFLAGS) 
