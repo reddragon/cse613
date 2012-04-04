@@ -225,7 +225,7 @@ parallel_bfs_thread(int k, int) {
     double ratio = (double)Qout[k].size() / (double)Qout[k].capacity();
     if (ratio < 0.25) {
         vnp_t tmpQ;
-        int new_capacity = Qout[k].capacity() / 2;
+        int new_capacity = Qout[k].size() * 2;
         new_capacity = new_capacity < QOUT_MIN_CAPACITY ? QOUT_MIN_CAPACITY : new_capacity;
         tmpQ.reserve(new_capacity);
         tmpQ.assign(Qout[k].begin(), Qout[k].end());
@@ -273,7 +273,7 @@ parallel_bfs_thread(int k, int size) {
     double ratio = (double)Qout[k].size() / (double)Qout[k].capacity();
     if (ratio < 0.25) {
         vnp_t tmpQ;
-        int new_capacity = Qout[k].capacity() / 2;
+        int new_capacity = Qout[k].size() * 2;
         new_capacity = new_capacity < QOUT_MIN_CAPACITY ? QOUT_MIN_CAPACITY : new_capacity;
         tmpQ.reserve(new_capacity);
         tmpQ.assign(Qout[k].begin(), Qout[k].end());
