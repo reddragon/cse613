@@ -4,7 +4,7 @@
 #$ -cwd
 #$ -q development
 #$ -pe 12way 24
-#$ -N parallel_bfs_sample02
+#$ -N parallel_bfs_sample02-dev
 #$ -o output-$JOB_NAME
 #$ -e error-$JOB_NAME
 #$ -M dhruvbird@gmail.com
