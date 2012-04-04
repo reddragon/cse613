@@ -14,6 +14,12 @@ parallel_d: parallel_bfs.cpp
 parallel_h: parallel_bfs.cpp
 	cilk++ -o parallel_h parallel_bfs.cpp $(CXXFLAGS) $(CILKFLAGS) -DPARTH
 
+sample02:
+	qsub qrun-sample02.sh
+
+sample02-dev:
+	qsub qrun-sample02-dev.sh
+
 pdf: hw2.tex
 	pdflatex hw2.tex
 
