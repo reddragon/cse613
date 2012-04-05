@@ -10,6 +10,7 @@
 #include <reducer_max.h>
 #include <reducer_opadd.h>
 #include <cilk_mutex.h>
+#include "timer.hpp"
 
 using namespace std;
 
@@ -385,9 +386,14 @@ int
 cilk_main() {
     initialize();
     read_input();
+    time_t total_sec = 0;
     for (int i = 0; i < r; ++i) {
+        Timer t;
+        t.start();
         parallel_bfs(sources[i]);
+        total_sec += t.stop();
         unsigned long long c = checksum_serial();
         cout<<dmax<<" "<<c<<"\n";
     }
+    fprintf(stderr, "n: %d, m: %d, r: %d, time(sec): %lu\n", n, m, r, total_sec);
 }
