@@ -9,7 +9,7 @@
 #$ -e error-$JOB_NAME
 #$ -M dhruvbird@gmail.com
 #$ -m be
-#$ -l h_rt=03:00:00
+#$ -l h_rt=01:00:00
 
 HW2='/work/01905/rezaul/CSE613/HW2/samples/turn-in/'
 time ./serial     < $HW2/test-01-in.txt > turn-in/test-01-1a-out.txt
