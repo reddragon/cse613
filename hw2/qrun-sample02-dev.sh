@@ -12,7 +12,7 @@
 #$ -l h_rt=01:00:00
 
 HW2='/work/01905/rezaul/CSE613/HW2/samples/'
-time ./serial < $HW2/sample-02-in.txt > samples/serial-02.out
-time ./parallel < $HW2/sample-02-in.txt > samples/parallel-02.out
-time ./parallel_d < $HW2/sample-02-in.txt > samples/parallel_d-02.out
-time ./parallel_h < $HW2/sample-02-in.txt > samples/parallel_h-02.out
+time ./serial < $HW2/sample-02-in.txt > samples/serial-02-dev.out
+time ./parallel < $HW2/sample-02-in.txt > samples/parallel-02-dev.out
+time ./parallel_d < $HW2/sample-02-in.txt > samples/parallel_d-02-dev.out
+time ./parallel_h < $HW2/sample-02-in.txt > samples/parallel_h-02-dev.out

@@ -20,6 +20,12 @@ sample02:
 sample02-dev:
 	qsub qrun-sample02-dev.sh
 
+turnin:
+	qsub qrun-turnin01-dev.sh
+	qsub qrun-turnin02-dev.sh
+	qsub qrun-turnin03-dev.sh
+	qsub qrun-turnin04-dev.sh
+
 pdf: hw2.tex
 	pdflatex hw2.tex
 
