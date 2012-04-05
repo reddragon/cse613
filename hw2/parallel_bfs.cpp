@@ -386,7 +386,7 @@ int
 cilk_main() {
     initialize();
     read_input();
-    time_t total_sec = 0;
+    double total_sec = 0;
     for (int i = 0; i < r; ++i) {
         Timer t;
         t.start();
@@ -395,5 +395,5 @@ cilk_main() {
         unsigned long long c = checksum_serial();
         cout<<dmax<<" "<<c<<"\n";
     }
-    fprintf(stderr, "n: %d, m: %d, r: %d, time(sec): %lu\n", n, m, r, total_sec);
+    fprintf(stderr, "n: %d, m: %d, r: %d, time(sec): %f\n", n, m, r, total_sec/1000000.0);
 }

@@ -1,6 +1,6 @@
 CXXFLAGS := $(FLAGS) -O2 -Wall
 
-all: serial parallel parallel_d parallel_h
+all: serial parallel parallel_d parallel_h timer.hpp
 
 serial: serial_bfs.cpp
 	$(CXX) -o serial serial_bfs.cpp $(CXXFLAGS)
