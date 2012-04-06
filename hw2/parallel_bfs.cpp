@@ -14,7 +14,7 @@
 
 using namespace std;
 
-typedef map<int, int> matrix_1d_t;
+typedef vector<int> matrix_1d_t;
 typedef vector<matrix_1d_t> matrix_2d_t;
 
 #define cfor                cilk_for
@@ -51,7 +51,7 @@ struct graph_t {
         assert(u < (int)this->impl.size());
         assert(v < (int)this->impl.size());
 
-        this->impl[u][v] = 1;
+        this->impl[u].push_back(v);
     }
 };
 
@@ -170,13 +170,13 @@ parallel_bfs_thread(int k, int) {
             
             node_pair np = (*(pseg->q))[index];
             int u = np.u;
-            
-            for (matrix_1d_t::iterator i = graph.impl[u].begin(); 
-                 i != graph.impl[u].end(); ++i) {
-                int v = i->first;
+            matrix_1d_t::iterator end = graph.impl[u].end();
+
+            for (matrix_1d_t::iterator i = graph.impl[u].begin(); i != end; ++i) {
+                int v = *i;
                 // assert(false);
                 // fprintf(stderr, "processing edge (%d, %d), d[%d] = %d, d[%d] = %d\n", u, v, u, d[u], v, d[v]);
-                
+
                 if (d[v] == infinity) {
                     d[v] = d[u] + 1;
                     pmax[k] = std::max(pmax[k], d[v]);
@@ -249,9 +249,9 @@ parallel_bfs_thread(int k, int size) {
             if (parent[u] == p) {
 #endif
 
-                for (matrix_1d_t::iterator i = graph.impl[u].begin(); 
-                     i != graph.impl[u].end(); ++i) {
-                    int v = i->first;
+                matrix_1d_t::iterator end = graph.impl[u].end();
+                for (matrix_1d_t::iterator i = graph.impl[u].begin(); i != end; ++i) {
+                    int v = *i;
                     // assert(false);
                     // fprintf(stderr, "processing edge (%d, %d), d[%d] = %d, d[%d] = %d\n", u, v, u, d[u], v, d[v]);
 
