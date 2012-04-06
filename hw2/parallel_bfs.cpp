@@ -10,6 +10,7 @@
 #include <reducer_max.h>
 #include <reducer_opadd.h>
 #include <cilk_mutex.h>
+#include <cilkview.h>
 #include "timer.hpp"
 
 using namespace std;
@@ -386,6 +387,10 @@ int
 cilk_main() {
     initialize();
     read_input();
+#if defined CILKVIEWPLOT
+    cilk::cilkview cv;
+    cv.start();
+#endif
     double total_sec = 0;
     for (int i = 0; i < r; ++i) {
         Timer t;
@@ -395,5 +400,9 @@ cilk_main() {
         unsigned long long c = checksum_serial();
         cout<<dmax<<" "<<c<<"\n";
     }
+#if defined CILKVIEWPLOT
+    cv.stop();
+    cv.dump("plot");
+#endif
     fprintf(stderr, "n: %d, m: %d, r: %d, time(sec): %f\n", n, m, r, total_sec/1000000.0);
 }

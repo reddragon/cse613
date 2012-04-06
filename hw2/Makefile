@@ -14,6 +14,12 @@ parallel_d: parallel_bfs.cpp
 parallel_h: parallel_bfs.cpp
 	cilk++ -o parallel_h parallel_bfs.cpp $(CXXFLAGS) $(CILKFLAGS) -DPARTH
 
+parallel_cv: parallel_bfs.cpp
+	cilk++ -o parallel parallel_bfs.cpp $(CXXFLAGS) $(CILKFLAGS) -DCILKVIEWPLOT	
+
+parallel_h_cv: parallel_bfs.cpp
+	cilk++ -o parallel_h parallel_bfs.cpp $(CXXFLAGS) $(CILKFLAGS) -DPARTH -DCILKVIEWPLOT
+
 sample02:
 	qsub qrun-sample02.sh
 
