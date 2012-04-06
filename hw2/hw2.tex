@@ -209,6 +209,18 @@ $ ./parallel_h < input_file_path
 
 \subsection{Tabular comparison}
 
+\begin{center}
+  \begin{tabular}{| l | r | r | r | r |}
+    \hline
+    Input/Algorithm & (a) & (b) & (d) & (h) \\ \hline
+    \texttt{test-01-in.txt} & 4min 25sec & 59sec (4.47x) & 1min 1sec (4.29x) & 1min 9sec (2.05x) \\ \hline
+    \texttt{test-02-in.txt} & 3min 56sec & 48sec (4.96x) & 51sec (4.65x) & 57sec (4.11x) \\
+    \hline
+  \end{tabular}
+\end{center}
+
+(Only including tests that completed running under 60 minutes using the serial algorithm)
+
 \subsection{\textit{Cilkview} scalability plot}
 
 
