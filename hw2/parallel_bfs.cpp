@@ -388,6 +388,7 @@ cilk_main() {
 #if defined CILKVIEWPLOT
     // Because CilkView doesn't work with input redirection
     freopen("/work/01905/rezaul/CSE613/HW2/samples/turn-in/test-03-in.txt", "r", stdin);
+    freopen("cilkview_plots/parallel_bfs.out", "w", stdout);
 #endif
     initialize();
     read_input();
