@@ -385,6 +385,10 @@ checksum_serial() {
 
 int
 cilk_main() {
+#if defined CILKVIEWPLOT
+    // Because CilkView doesn't work with input redirection
+    freopen("/work/01905/rezaul/CSE613/HW2/samples/sample-03-in.txt", "r", stdin);
+#endif
     initialize();
     read_input();
 #if defined CILKVIEWPLOT
