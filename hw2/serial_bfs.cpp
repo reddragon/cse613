@@ -8,7 +8,7 @@
 
 using namespace std;
 
-typedef map<int, int> matrix_1d_t;
+typedef vector<int> matrix_1d_t;
 typedef vector<matrix_1d_t> matrix_2d_t;
 
 struct graph_t {
@@ -28,7 +28,7 @@ struct graph_t {
         assert(u < (int)this->impl.size());
         assert(v < (int)this->impl.size());
 
-        this->impl[u][v] = 1;
+        this->impl[u].push_back(v);
     }
 };
 
@@ -70,9 +70,9 @@ serial_bfs(int s) {
     while (!q.empty()) {
         int u = q.front();
         q.pop();
-        for (matrix_1d_t::iterator i = graph.impl[u].begin(); 
-             i != graph.impl[u].end(); ++i) {
-            int v = i->first;
+        matrix_1d_t::iterator end = graph.impl[u].end();
+        for (matrix_1d_t::iterator i = graph.impl[u].begin(); i != end; ++i) {
+            int v = *i;
             // fprintf(stderr, "processing edge (%d, %d), d[%d] = %d, d[%d] = %d\n", u, v, u, d[u], v, d[v]);
             if (d[v] == infinity) {
                 d[v] = d[u] + 1;
