@@ -77,9 +77,13 @@ serial_bfs(int s) {
         // int u = q.front();
         int u = q[qi++];
         // q.pop();
-        matrix_1d_t::iterator end = graph.impl[u].end();
-        for (matrix_1d_t::iterator i = graph.impl[u].begin(); i != end; ++i) {
-            int v = *i;
+        // matrix_1d_t::iterator end = graph.impl[u].end();
+        int sz = graph.impl[u].size();
+        matrix_1d_t &gu = graph.impl[u];
+        // for (matrix_1d_t::iterator i = graph.impl[u].begin(); i != end; ++i) {
+        for (int i = 0; i < sz; ++i) {
+            // int v = *i;
+            int v = gu[i];
             // fprintf(stderr, "processing edge (%d, %d), d[%d] = %d, d[%d] = %d\n", u, v, u, d[u], v, d[v]);
             if (d[v] == infinity) {
                 d[v] = d[u] + 1;
