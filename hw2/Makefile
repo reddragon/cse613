@@ -33,8 +33,11 @@ turnin:
 	qsub qrun-turnin03-dev.sh
 	qsub qrun-turnin04-dev.sh
 
+cilkview:
+	qsub qrun-cilkview-dev.sh
+
 pdf: hw2.tex
 	pdflatex hw2.tex
 
 clean:
-	rm -f serial parallel parallel_d parallel_h
+	rm -f serial parallel parallel_d parallel_h parallel_cv parallel_h_cv
