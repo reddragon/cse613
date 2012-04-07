@@ -65,11 +65,18 @@ serial_bfs(int s) {
     d.resize(n + 1, infinity);
     d[s] = 0;
     dmax = 0;
-    queue<int> q;
-    q.push(s);
-    while (!q.empty()) {
-        int u = q.front();
-        q.pop();
+    vector<int> q;
+    q.resize(n + 4);
+    q[0] = s;
+    int qi = 0;
+    int qj = qi + 1;
+
+    // queue<int> q;
+    // q.push(s);
+    while (/*!q.empty()*/ qi != qj) {
+        // int u = q.front();
+        int u = q[qi++];
+        // q.pop();
         matrix_1d_t::iterator end = graph.impl[u].end();
         for (matrix_1d_t::iterator i = graph.impl[u].begin(); i != end; ++i) {
             int v = *i;
@@ -77,7 +84,8 @@ serial_bfs(int s) {
             if (d[v] == infinity) {
                 d[v] = d[u] + 1;
                 dmax = std::max(dmax, d[v]);
-                q.push(v);
+                // q.push(v);
+                q[qj++] = v;
             }
         }
     }
