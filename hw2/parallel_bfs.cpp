@@ -108,7 +108,7 @@ int log2(int n) {
 void
 initialize() {
     p = cilk::current_worker_count();
-    max_steal_attempts = 10 * p * log2(p);
+    max_steal_attempts = 2 * p * log2(p);
 }
 
 void
