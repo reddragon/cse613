@@ -162,13 +162,22 @@ next_segment(int size) {
 // With work stealing
 void
 parallel_bfs_thread(int k, int) {
+    const int grain_size = 60;
     while (true) {
         QsegMutexes[k].lock();
         segment_t *pseg = &(Qsegments[k]);
-        while (pseg->i != pseg->j) {
-            int index = pseg->i++;
-            QsegMutexes[k].unlock();
-            
+        int next_lock_at = min(pseg->i + grain_size, pseg->j - 1), local_i = pseg->i;
+        bool locked = true;
+
+        while (local_i < pseg->j) {
+            int index = local_i++;
+            if(locked) {
+                pseg->i = max(local_i, pseg->i);
+                local_i = pseg->i;
+                locked = false;
+                QsegMutexes[k].unlock();
+            }
+
             node_pair np = (*(pseg->q))[index];
             int u = np.u;
             matrix_1d_t::iterator end = graph.impl[u].end();
@@ -184,11 +193,15 @@ parallel_bfs_thread(int k, int) {
                     Qout[k].push_back(node_pair(u, v));
                 }
             }
-
-            QsegMutexes[k].lock();
+            
+            if(local_i == next_lock_at) {
+                locked = true;
+                QsegMutexes[k].lock();
+            }
 
         } // while()
-
+        pseg->i = max(local_i, pseg->i);
+        locked = false;
         QsegMutexes[k].unlock();
 
         segment_t tmp(NULL, 0, 0);
