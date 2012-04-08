@@ -162,7 +162,7 @@ next_segment(int size) {
 // With work stealing
 void
 parallel_bfs_thread(int k, int) {
-    const int grain_size = 60;
+    const int grain_size = 120;
     while (true) {
         QsegMutexes[k].lock();
         segment_t *pseg = &(Qsegments[k]);
