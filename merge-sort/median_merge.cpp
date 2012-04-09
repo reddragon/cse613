@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <vector>
 #include <algorithm>
+#include <assert.h>
 
 using namespace std;
 
@@ -75,87 +76,53 @@ median(T *a1, T *a2, size_t i1, size_t j1, size_t i2, size_t j2) {
     return median(a2, a1, i2, j2, i1, j1);
 }
 
+void
+test(int *a1, int *a2, int i1, int j1, int i2, int j2) {
+    int s1 = j1-i1, s2=j2-i2;
+    vector<int> out(s1 + s2);
+
+    vector<int> v(a1 + i1, a1 + j1);
+    v.insert(v.end(), a2 + i2, a2 + j2);
+    sort(v.begin(), v.end());
+
+    median_t<int> m = median(a1, a2, i1, j1, i2, j2);
+    printf("Median: %s[%d] = %d (rank: %d)\n", (m.array == a1 ? "a1" : "a2"), m.index, m(), m.rank);
+    printf("Median by sorting: %d, #elements = %d (%d)\n", v[v.size()/2], v.size(), s1+s2);
+
+    if (m.array == a2) {
+        std::swap(a1, a2);
+        std::swap(i1, i2);
+        std::swap(j1, j2);
+    }
+
+    size_t i = m.index + 1;
+    size_t j = m.rank - (m.index - i1) + i2;
+
+    printf("a1[%d] = %d, a2[%d] = %d\n", i, a1[i], j, a2[j]);
+    std::merge(a1 + i1, a1+i,  a2 + i2, a2 + j, out.begin());
+    std::merge(a1 + i,  a1+j1, a2 + j,  a2 + j2, out.begin() + m.rank + 1);
+
+    for (size_t k = 0; k < out.size(); ++k) {
+        printf("%2d ", out[k]);
+    }
+    printf("\n\n");
+
+    assert(out[(s1+s2)/2] == m());
+}
+
 int
 main() {
     int a1[] = { 23, 45, 55, 56, 57, 58, 59, 65, 75, 85 };
     int a2[] = { 10, 20, 30, 40, 50, 60, 70 };
     int s1 = sizeof(a1)/sizeof(int), s2 = sizeof(a2)/sizeof(int);
 
-    vector<int> out(s1 + s2);
-
-    vector<int> v(a1, a1 + s1);
-    v.insert(v.end(), a2, a2 + s2);
-    sort(v.begin(), v.end());
-
-    median_t<int> m = median(a1, a2, 0, s1, 0, s2);
-    printf("Median: %s[%d] = %d (rank: %d)\n", (m.array == a1 ? "a1" : "a2"), m.index, m(), m.rank);
-    printf("Median by sorting: %d, #elements = %d\n", v[v.size()/2], v.size());
-
-    size_t i = m.index + 1, j = m.rank - (m.index);
-    std::merge(a1, a1+i, a2, a2+j, out.begin());
-    std::merge(a1+i, a1+s1, a2+j, a2+s2, out.begin() + m.rank + 1);
-
-    for (size_t k = 0; k < out.size(); ++k) {
-        printf("%2d ", out[k]);
-    }
-    printf("\n");
-
-    m = median(a2, a1, 0, s2, 0, sizeof(a1)/sizeof(int));
-    printf("Median: %s[%d] = %d (rank: %d)\n", (m.array == a1 ? "a1" : "a2"), m.index, m(), m.rank);
-    printf("Median by sorting: %d, #elements = %d\n", v[v.size()/2], v.size());
-
-    v.clear();
-    v.assign(a1 + 1, a1 + s1);
-    v.insert(v.end(), a2, a2 + s2);
-    sort(v.begin(), v.end());
-
-    m = median(a1, a2, 1, sizeof(a1)/sizeof(int), 0, sizeof(a2)/sizeof(int));
-    printf("Median: %s[%d] = %d (rank: %d)\n", (m.array == a1 ? "a1" : "a2"), m.index, m(), m.rank);
-    printf("Median by sorting: %d, #elements = %d\n", v[v.size()/2], v.size());
-
-    v.clear();
-    v.assign(a1, a1 + s1);
-    v.insert(v.end(), a2 + 1, a2 + s2);
-    sort(v.begin(), v.end());
-
-    m = median(a2, a1, 1, sizeof(a2)/sizeof(int), 0, sizeof(a1)/sizeof(int));
-    printf("Median: %s[%d] = %d (rank: %d)\n", (m.array == a1 ? "a1" : "a2"), m.index, m(), m.rank);
-    printf("Median by sorting: %d, #elements = %d\n", v[v.size()/2], v.size());
-
-    v.clear();
-    v.assign(a1 + 2, a1 + s1);
-    v.insert(v.end(), a2, a2 + s2);
-    sort(v.begin(), v.end());
-
-    m = median(a1, a2, 2, sizeof(a1)/sizeof(int), 0, sizeof(a2)/sizeof(int));
-    printf("Median: %s[%d] = %d (rank: %d)\n", (m.array == a1 ? "a1" : "a2"), m.index, m(), m.rank);
-    printf("Median by sorting: %d, #elements = %d\n", v[v.size()/2], v.size());
-
-    v.clear();
-    v.assign(a1, a1 + s1);
-    v.insert(v.end(), a2 + 2, a2 + s2);
-    sort(v.begin(), v.end());
-
-    m = median(a2, a1, 2, sizeof(a2)/sizeof(int), 0, sizeof(a1)/sizeof(int));
-    printf("Median: %s[%d] = %d (rank: %d)\n", (m.array == a1 ? "a1" : "a2"), m.index, m(), m.rank);
-    printf("Median by sorting: %d, #elements = %d\n", v[v.size()/2], v.size());
-
-    v.clear();
-    v.assign(a1 + 3, a1 + s1);
-    v.insert(v.end(), a2, a2 + s2);
-    sort(v.begin(), v.end());
-
-    m = median(a1, a2, 3, sizeof(a1)/sizeof(int), 0, sizeof(a2)/sizeof(int));
-    printf("Median: %s[%d] = %d (rank: %d)\n", (m.array == a1 ? "a1" : "a2"), m.index, m(), m.rank);
-    printf("Median by sorting: %d, #elements = %d\n", v[v.size()/2], v.size());
-
-    v.clear();
-    v.assign(a1, a1 + s1);
-    v.insert(v.end(), a2 + 3, a2 + s2);
-    sort(v.begin(), v.end());
-
-    m = median(a2, a1, 3, sizeof(a2)/sizeof(int), 0, sizeof(a1)/sizeof(int));
-    printf("Median: %s[%d] = %d (rank: %d)\n", (m.array == a1 ? "a1" : "a2"), m.index, m(), m.rank);
-    printf("Median by sorting: %d, #elements = %d\n", v[v.size()/2], v.size());
+    test(a1, a2, 0, s1, 0, s2);
+    test(a2, a1, 0, s2, 0, s1);
+    test(a1, a2, 1, s1, 1, s2);
+    test(a2, a1, 1, s2, 1, s1);
+    test(a1, a2, 2, s1, 2, s2);
+    test(a2, a1, 2, s2, 2, s1);
+    test(a1, a2, 3, s1, 3, s2);
+    test(a2, a1, 3, s2, 3, s1);
 
 }
