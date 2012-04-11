@@ -162,22 +162,11 @@ next_segment(int size) {
 // With work stealing
 void
 parallel_bfs_thread(int k, int) {
-    const int lock_after = 65;
-    bool locked = false;
     while (true) {
-        QsegMutexes[k].lock();
-        locked = true;
         segment_t *pseg = &(Qsegments[k]);
-        int next_lock_at = min(pseg->i + lock_after, pseg->j - 1), local_i = pseg->i;
 
-        while (local_i < pseg->j) {
-            int index = local_i++;
-            if(locked) {
-                pseg->i = max(local_i, pseg->i);
-                local_i = pseg->i;
-                locked = false;
-                QsegMutexes[k].unlock();
-            }
+        while (pseg->i < pseg->j) {
+            int index = pseg->i++;
 
             node_pair np = (*(pseg->q))[index];
             int u = np.u;
@@ -195,19 +184,7 @@ parallel_bfs_thread(int k, int) {
                 }
             }
             
-            if(local_i == next_lock_at) {
-                locked = true;
-                QsegMutexes[k].lock();
-            }
-
         } // while()
-        if(locked == false) {
-            QsegMutexes[k].lock();
-            locked = true;
-        }
-        pseg->i = max(local_i, pseg->i);
-        locked = false;
-        QsegMutexes[k].unlock();
 
         segment_t tmp(NULL, 0, 0);
         int steal_attempts;
