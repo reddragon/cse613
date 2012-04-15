@@ -165,7 +165,7 @@ parallel_bfs_thread(int k, int) {
     const int lock_after = 65;
     bool locked = false;
     while (true) {
-        // QsegMutexes[k].lock();
+        QsegMutexes[k].lock();
         locked = true;
         segment_t *pseg = &(Qsegments[k]);
         int next_lock_at = min(pseg->i + lock_after, pseg->j - 1), local_i = pseg->i;
@@ -176,7 +176,7 @@ parallel_bfs_thread(int k, int) {
                 pseg->i = max(local_i, pseg->i);
                 local_i = pseg->i;
                 locked = false;
-                // QsegMutexes[k].unlock();
+                QsegMutexes[k].unlock();
             }
 
             node_pair np = (*(pseg->q))[index];
@@ -197,17 +197,17 @@ parallel_bfs_thread(int k, int) {
             
             if(local_i == next_lock_at) {
                 locked = true;
-                // QsegMutexes[k].lock();
+                QsegMutexes[k].lock();
             }
 
         } // while()
         if(locked == false) {
-            // QsegMutexes[k].lock();
+            QsegMutexes[k].lock();
             locked = true;
         }
         pseg->i = max(local_i, pseg->i);
         locked = false;
-        // QsegMutexes[k].unlock();
+        QsegMutexes[k].unlock();
 
         segment_t tmp(NULL, 0, 0);
         int steal_attempts;
@@ -348,7 +348,7 @@ parallel_bfs(int s) {
 #endif
 
     Qin[0].push_back(node_pair(-1, s));
-    int nseg = p; // TODO - FIXME
+    //int nseg = p; // TODO - FIXME
 
 #if defined PARTH
     Qsegments.clear();
@@ -359,7 +359,8 @@ parallel_bfs(int s) {
 
     // fprintf(stderr, "QminNonEmpty: %d, Qin.size(): %d\n", QminNonEmpty, Qin.size());
     while (QminNonEmpty < (int)Qin.size()) {
-        int size = ceil((double)sizeofQin() / nseg);
+        int nseg = ceil((double)2.0*p*log(p));
+	int size = ceil((double)sizeofQin() / nseg);
         // fprintf(stderr, "size: %d\n", size);
         if (!size) {
             break;
