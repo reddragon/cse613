@@ -27,27 +27,36 @@
 #endif
 
 
+// a: The array to compute PPC on
+// size: The number of elements in a
+// jmp: MUST always be 1
+// func: The summing operator to use. Typically std::plus<T>()
 template <typename T, typename F>
 void
-parallel_prefix(T *a, int size, int jmp, F func) {
+parallel_prefix(T *a, size_t size, size_t jmp, F func) {
     // fprintf(stderr, "parallel_prefix(%d, %d)\n", size, jmp);
-    int step = jmp*2;
+    size_t step = jmp*2;
     if (step-1 >= size) {
         return;
     }
-    FOR (int i = step-1; i < size; i += step) {
+    FOR (size_t i = step-1; i < size; i += step) {
         a[i] = func(a[i], a[i-jmp]);
     }
     parallel_prefix(a, size, jmp*2, func);
-    FOR (int j = step-1+jmp; j < size; j += step) {
+    FOR (size_t j = step-1+jmp; j < size; j += step) {
         a[j] = func(a[j], a[j-jmp]);
     }
 }
 
+// a: The array to partition
+// q: The first valid index in a
+// r: The last valid index in a
+// x: The pivot element
+// cmp: A less-than comparator. Typically it is std::less<T>()
 template <typename T, typename CMP>
-int
-parallel_partition(T *a, int q, int r, T x, CMP cmp) {
-    int n = r - q + 1;
+size_t
+parallel_partition(T *a, size_t q, size_t r, T x, CMP cmp) {
+    size_t n = r - q + 1;
     if (n == 1) {
         return q;
     }
@@ -56,7 +65,7 @@ parallel_partition(T *a, int q, int r, T x, CMP cmp) {
     lt.resize(n);
     gt.resize(n);
 
-    PARTITION_FOR (int i = 0; i < n; ++i) {
+    PARTITION_FOR (size_t i = 0; i < n; ++i) {
         B[i] = a[q+i];
         if (cmp(B[i], x)) {
             lt[i] = 1;
@@ -64,10 +73,10 @@ parallel_partition(T *a, int q, int r, T x, CMP cmp) {
             gt[i] = 1;
         }
     }
-    parallel_prefix(&*lt.begin(), lt.size(), 1, std::plus<int>());
-    parallel_prefix(&*gt.begin(), gt.size(), 1, std::plus<int>());
-    int k = q + lt[n-1];
-    PARTITION_FOR (int j = 0; j < n; ++j) {
+    parallel_prefix(&*lt.begin(), lt.size(), 1, std::plus<T>());
+    parallel_prefix(&*gt.begin(), gt.size(), 1, std::plus<T>());
+    size_t k = q + lt[n-1];
+    PARTITION_FOR (size_t j = 0; j < n; ++j) {
         if (cmp(B[j], x)) {
             a[q+lt[j]-1] = B[j];
         } else {
@@ -77,25 +86,29 @@ parallel_partition(T *a, int q, int r, T x, CMP cmp) {
     return k;
 }
 
+// a: The array to sort
+// q: The first valid index in a
+// r: The last valid index in a
+// cmp: A less-than comparator. Typically it is std::less<T>()
 template <typename T, typename CMP>
 void
-parallel_randomized_looping_quicksort(T *a, int q, int r, CMP cmp) {
+parallel_randomized_looping_quicksort(T *a, size_t q, size_t r, CMP cmp) {
     dprintf("parallel_randomized_looping_quicksort(%d, %d)\n", q, r);
     // std::sort(a + q, a + r + 1, cmp);
     // return;
-    int n = r - q + 1;
+    size_t n = r - q + 1;
     if (n <= BASE_SIZE) {
         std::sort(a + q, a + r + 1, cmp);
         return;
     }
-    int k = 0;
+    size_t k = 0;
     do {
-        dprintf("n: %d, q: %d, r: %d, k: %d, (%d > %d)?\n", n, q, r, k, std::max(r-k, k-q), (int)ceil(3*n/4.0));
-        int x = q + (rand() % n);
-        dprintf("x: %d\n", x);
+        dprintf("n: %d, q: %d, r: %d, k: %d, (%d > %d)?\n", n, q, r, k, std::max(r-k, k-q), (size_t)ceil(3*n/4.0));
+        size_t x = q + (rand() % n);
+        dprintf("x: %llu\n", x);
         k = parallel_partition(a, q, r, a[x], cmp);
     } while (std::max(r-k, k-q) > ceil(3*n/4.0));
-    dprintf("selected k: %d\n", k);
+    dprintf("selected k: %llu\n", k);
 
     if (k > q) {
         cilk_spawn parallel_randomized_looping_quicksort(a, q, k-1, cmp);
