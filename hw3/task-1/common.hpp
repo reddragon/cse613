@@ -39,8 +39,8 @@ parallel_prefix(T *a, int size, int jmp, F func) {
         a[i] = func(a[i], a[i-jmp]);
     }
     parallel_prefix(a, size, jmp*2, func);
-    FOR (int i = step-1+jmp; i < size; i += step) {
-        a[i] = func(a[i], a[i-jmp]);
+    FOR (int j = step-1+jmp; j < size; j += step) {
+        a[j] = func(a[j], a[j-jmp]);
     }
 }
 
@@ -67,11 +67,11 @@ parallel_partition(T *a, int q, int r, T x, CMP cmp) {
     parallel_prefix(&*lt.begin(), lt.size(), 1, std::plus<int>());
     parallel_prefix(&*gt.begin(), gt.size(), 1, std::plus<int>());
     int k = q + lt[n-1];
-    PARTITION_FOR (int i = 0; i < n; ++i) {
-        if (cmp(B[i], x)) {
-            a[q+lt[i]-1] = B[i];
+    PARTITION_FOR (int j = 0; j < n; ++j) {
+        if (cmp(B[j], x)) {
+            a[q+lt[j]-1] = B[j];
         } else {
-            a[k+gt[i]-1] = B[i];
+            a[k+gt[j]-1] = B[j];
         }
     }
     return k;
