@@ -23,10 +23,10 @@ MAIN() {
     parallel_randomized_looping_quicksort(&*a.begin(), 0, a.size()-1, std::less<int>());
     cout<<a<<endl;
 #else
-    size_t n;
-    scanf("%d", &n);
+    long long int n;
+    scanf("%lld", &n);
     std::vector<long long int> a(n);
-    for (size_t i = 0; i < n; ++i) {
+    for (long long int i = 0; i < n; ++i) {
         scanf("%lld", &a[i]);
     }
 
@@ -35,7 +35,7 @@ MAIN() {
     parallel_randomized_looping_quicksort(&*a.begin(), 0, a.size()-1, std::less<long long int>());
     double total_sec = t.stop();
 
-    for (size_t i = 0; i < n; ++i) {
+    for (long long int i = 0; i < n; ++i) {
         printf("%lld\n", a[i]);
     }
 
