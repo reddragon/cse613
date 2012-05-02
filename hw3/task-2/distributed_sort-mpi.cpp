@@ -1,11 +1,18 @@
 #include <mpi.h>
 #include <stdlib.h>
 
+// TODO:
+// All sends are receives are blocking for now
+// Replace by non-blocking ones.
+
 int*
 pivot_selection(int l, int* A) {
     for (int i = 0; i < l; i++)
         printf("%d ", A[i]);
     printf("\n");
+    
+    // TODO Later replace by the Shared-Memory Sort
+    qsort();
     return NULL;
 }
 
@@ -50,6 +57,7 @@ dsort_master(int n, int* A, int p, int q) {
         // Send array from A[from] to A[upto] (both inclusive)
         MPI_Send((void*)(A + from), count, MPI_INT, i, 0, MPI_COMM_WORLD);
         printf("Sent %d elements from %d to %d to processor %d\n", count, from, upto, i);
+        cur += share;
     }
 
     // Computing pivots for my own part
