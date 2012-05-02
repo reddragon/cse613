@@ -39,7 +39,7 @@ pivot_selection(size_t l, data_t *A, int npivots) {
     // Use Shared-Memory Sort
     parallel_randomized_looping_quicksort_CPP(&*(pivots.begin()), 0, pivots.size());
 
-    std::vector<data_t> *ret = new std::vector<data_t*>;
+    std::vector<data_t> *ret = new std::vector<data_t>;
     int jmp = l/npivots;
 
     jmp = jmp < 1 ? 1 : jmp;
