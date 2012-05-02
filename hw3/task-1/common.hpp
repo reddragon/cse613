@@ -18,12 +18,16 @@
 #define cilk_sync
 #endif
 
-#define BASE_SIZE 4
+size_t base_size = 4;
 
 #if defined DEBUG
 #define dprintf(ARGS...) fprintf(stderr, ARGS)
 #else
 #define dprintf(ARGS...)
+#endif
+
+#if defined PARTE
+#define PARTITION_FOR for
 #endif
 
 
@@ -97,7 +101,7 @@ parallel_randomized_looping_quicksort(T *a, size_t q, size_t r, CMP cmp) {
     // std::sort(a + q, a + r + 1, cmp);
     // return;
     size_t n = r - q + 1;
-    if (n <= BASE_SIZE) {
+    if (n <= base_size) {
         std::sort(a + q, a + r + 1, cmp);
         return;
     }

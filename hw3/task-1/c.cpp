@@ -10,12 +10,10 @@
 
 using namespace std;
 
-#if defined PARTE
-#define PARTITION_FOR for
-#endif
+extern size_t base_size;
 
 int
-MAIN() {
+MAIN(int argc, char *argv[]) {
 #if 0
     int ia[] = { 34, 42, 54, 2, 121, 32, 72, 766, 81, 1, 12, 11, 37, 39 };
     int sz = sizeof(ia)/sizeof(int);
@@ -23,6 +21,13 @@ MAIN() {
     parallel_randomized_looping_quicksort(&*a.begin(), 0, a.size()-1, std::less<int>());
     cout<<a<<endl;
 #else
+
+    if (argc > 1) {
+        base_size = atol(argv[1]);
+    }
+    if (base_size < 4) {
+        base_size = 4;
+    }
     long long int n;
     scanf("%lld", &n);
     std::vector<long long int> a(n);
