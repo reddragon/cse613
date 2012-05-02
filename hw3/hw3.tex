@@ -1,0 +1,80 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{url}
+\usepackage{color}
+% \usepackage{savetrees}
+\usepackage{listings}
+% \usetikzlibrary{shapes}
+
+% pseudocode notations
+\newcommand{\xif}{{\bf{\em{if~}}}}
+\newcommand{\xthen}{{\bf{\em{then~}}}}
+\newcommand{\xelse}{{\bf{\em{else~}}}}
+\newcommand{\xelseif}{{\bf{\em{elif~}}}}
+\newcommand{\xfi}{{\bf{\em{fi~}}}}
+\newcommand{\xcase}{{\bf{\em{case~}}}}
+\newcommand{\xendcase}{{\bf{\em{endcase~}}}}
+\newcommand{\xfor}{{\bf{\em{for~}}}}
+\newcommand{\xto}{{\bf{\em{to~}}}}
+\newcommand{\xby}{{\bf{\em{by~}}}}
+\newcommand{\xdownto}{{\bf{\em{downto~}}}}
+\newcommand{\xdo}{{\bf{\em{do~}}}}
+\newcommand{\xrof}{{\bf{\em{rof~}}}}
+\newcommand{\xwhile}{{\bf{\em{while~}}}}
+\newcommand{\xendwhile}{{\bf{\em{endwhile~}}}}
+\newcommand{\xand}{{\bf{\em{and~}}}}
+\newcommand{\xor}{{\bf{\em{or~}}}}
+\newcommand{\xerror}{{\bf{\em{error~}}}}
+\newcommand{\xreturn}{{\bf{\em{return~}}}}
+\newcommand{\xparallel}{{\bf{\em{parallel~}}}}
+\newcommand{\T}{\hspace{0.5cm}}
+\newcommand{\m}{\mathcal}
+
+\def\func#1{\textrm{\bf{\sc{#1}}}}
+\def\funcbf#1{\textrm{\textbf{\textsc{#1}}}}
+
+
+\linespread{1.5}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1.9ex plus 0.5ex minus 0.2ex}
+
+% \linespread{1.4}
+
+\title{CSE613\\Parallel Programming -- Homework-3}
+
+\author{Dhruv Matani (108267786) \& Gaurav Menghani (108266803)}
+
+\renewcommand{\thesubsection}{\thesection\ (\alph{subsection})}
+
+\begin{document}
+\maketitle
+
+\clearpage
+
+\tableofcontents
+
+\clearpage
+
+\section{Distributed Sample Sort with Shared-Memory QuickSort}
+
+\subsection{Each process sorts $\frac{n}{p}$ + $\frac{n}{q}$ keys in worst case}
+In step 1, we distribute the $n$ keys evenly (as evenly as possible)
+between $p$ processes. Thus, each process has $\frac{n}{p}$ (roughly) keys.
+
+During step 2, each process has $q-1$ local pivots, which pivot the 
+$\frac{n}{p}$ keys of the process evenly. Thus each local pivot has 
+about $\frac{n}{pq}$ elements to its either side. 
+
+There are $p$ global pivots out of the total $p(q-1)$ local pivots.
+Each global pivot has $q-1$ local pivots to its either side, thus, 
+in step 5, when a process gets all keys between the pivots $p_i$ and 
+$p_i+1$, there would be $q-1$ local pivots between those two global
+pivots. Since, these local pivots were separated by 
+$\frac{n}{pq}$ keys, in all during step 5, each processor would get
+$q \times \frac{n}{pq}$, which is $\frac{n}{p}$ keys to sort.
+
+TODO: Is this right?
+\end{document}
