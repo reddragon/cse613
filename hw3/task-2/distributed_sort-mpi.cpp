@@ -33,11 +33,14 @@ sample_input(I1 s1, I1 e1, I2 s2, I2 e2) {
 }
 
 vector<data_t>*
-pivot_selection(size_t l, data_t *A, int npivots) {
+pivot_selection_slave(size_t l, data_t *A, int npivots) {
+
+    /*
     size_t rsz = 12 * log(l);
     rsz = rsz >= l ? l : rsz;
     vector<data_t> pivots(rsz);
     sample_input(A, A+l, pivots.begin(), pivots.end());
+    */
 
     // Use Shared-Memory Sort
     parallel_randomized_looping_quicksort_CPP(&*(pivots.begin()), 0, pivots.size());
@@ -47,7 +50,7 @@ pivot_selection(size_t l, data_t *A, int npivots) {
 
     jmp = jmp < 1 ? 1 : jmp;
     for (int i = 0; i < l; i += jmp) {
-        ret->push_back(pivots[i]);
+        ret->push_back(A[i]);
     }
 
     return ret;
