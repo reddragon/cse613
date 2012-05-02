@@ -8,7 +8,7 @@
 
 extern "C++" void parallel_randomized_looping_quicksort_CPP(long long int *a, size_t q, size_t r);
 
-typedef long long int data_t
+typedef long long int data_t;
 
 data_t*
 pivot_selection(size_t l, data_t *A) {
