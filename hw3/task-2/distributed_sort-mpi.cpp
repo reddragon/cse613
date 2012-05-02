@@ -32,6 +32,28 @@ sample_input(I1 s1, I1 e1, I2 s2, I2 e2) {
     }
 }
 
+MPI_Status
+MPI_send_data_t_array(long long int n, data_t *buff, int rank) {
+    MPI_Status ms;
+    MPI_Send(&n, 1, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD);
+
+    // Send buffer
+    MPI_Send((void*)(buff), n, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD);
+    return ms;
+}
+
+MPI_Status
+MPI_receive_data_t_array(vector<data_t> &buff, int rank) {
+    long long int count;
+    MPI_Status ms;
+    MPI_Recv(&count, 1, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD, &ms);
+    
+    buff.resize(count);
+    data_t* A = &*buffer.begin();
+    MPI_Recv(A, count, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD, &ms);
+    return ms;
+}
+
 vector<data_t>*
 pivot_selection_slave(size_t l, data_t *A, int npivots) {
 
@@ -61,17 +83,13 @@ dsort_slave(int r, int q) {
     MPI_Status ms;
     // Receive its share of the work
     // Receive the size of the array that is going to be received
-    // TODO: Do we really need to do this?
-    long long int count;
-    MPI_Recv(&count, 1, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD, &ms);
+    vector<data_t> buffer;
+    MPI_receive_data_t_array(buffer, 0);
     
-    vector<data_t> buffer(count);
     data_t* A = &*buffer.begin();
-    MPI_Recv(A, count, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD, &ms);
 
-    // TODO:
     // Do pivot_selection
-    vector<data_t>* pivots = pivot_selection(count, A, q);
+    vector<data_t>* pivots = pivot_selection_slave(count, A, q);
 
     // Send pivots across
     // Receive global pivots
@@ -91,14 +109,11 @@ dsort_master(vector<data_t> &A, int p, int q) {
     for (int i = 1; i < p; i++) {
         int from = (int)cur, upto = (i == p-1 ? n - 1 : (int)(cur + share - 1));
         long long int count = upto - from + 1;
-        
-        // Send the size of the array being sent. 
-        // TODO: Do we really need to send this?
-        MPI_Send(&count, 1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD);
-
         data_t *buff = &*A.begin();
+
         // Send array from A[from] to A[upto] (both inclusive)
-        MPI_Send((void*)(buff + from), count, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD);
+        MPI_send_data_t_array(count, (void*)(buff + from), i);
+
         // printf("Sent %d elements from %d to %d to processor %d\n", count, from, upto, i);
         cur += share;
     }
