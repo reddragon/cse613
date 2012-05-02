@@ -30,7 +30,8 @@ dsort_slave(int r) {
     long long int count;
     MPI_Recv(&count, 1, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD, &ms);
     
-    long long int* A = new long long int[count];
+    vector<long long int> buffer(count);
+    long long int* A = &*buffer.begin();
     MPI_Recv(A, count, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD, &ms);
 
     // TODO:
@@ -41,7 +42,6 @@ dsort_slave(int r) {
     // Receive global pivots
     // Do local bucketing
     // Distribute local buckets
-    delete[] A;
     // delete[] pivots;
 }
 
