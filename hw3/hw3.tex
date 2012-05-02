@@ -58,6 +58,34 @@
 
 \clearpage
 
+\section{Shared Memory Quicksort}
+
+\subsection{Best base case for part(c)}
+
+\begin{center}
+  \begin{tabular}{| l | r | r | r | r | r | r | r | r | r |}
+    \hline
+    Base Case (\# of elements) & 4 & 16 & 32 & 64 & 128 & 512 & 1024 & 4096 & 8192 \\ \hline
+    Running time (second) & 50 & 40 & 39 & 37 & 32 & 33 & 36 & 30 & 35 \\ \hline
+  \end{tabular}
+\end{center}
+
+We can see that the best running time is with a base case of \texttt{4096} elements.
+
+\subsection{Parallel Quicksort from part(c) when run on a single core and on all cores}
+
+\subsection{Parallel Quicksort with Serial Partition}
+
+\begin{center}
+  \begin{tabular}{| l | r | r | r | r | r | r | r | r | r |}
+    \hline
+    Base Case (\# of elements) & 4 & 16 & 32 & 64 & 128 & 512 & 1024 & 4096 & 8192 \\ \hline
+    Parallel Partition (sec) & 50 & 40 & 39 & 37 & 32 & 33 & 36 & 30 & 35 \\ \hline
+    Serial Partition (sec) & 49 & 40 & 38 & 33 & 35 & 31 & 30 & 32 & 38 \\ \hline
+  \end{tabular}
+\end{center}
+
+
 \section{Distributed Sample Sort with Shared-Memory QuickSort}
 
 \subsection{Each process sorts $\frac{n}{p}$ + $\frac{n}{q}$ keys in worst case}
