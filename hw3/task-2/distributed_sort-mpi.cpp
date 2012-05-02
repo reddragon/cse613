@@ -32,14 +32,14 @@ sample_input(I1 s1, I1 e1, I2 s2, I2 e2) {
     }
 }
 
-MPI_Status
+int
 MPI_send_data_t_array(long long int n, data_t *buff, int rank) {
-    MPI_Status ms;
-    MPI_Send(&n, 1, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD);
+    int ret;
+    ret = MPI_Send(&n, 1, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD);
 
     // Send buffer
-    MPI_Send((void*)(buff), n, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD);
-    return ms;
+    ret = MPI_Send((void*)(buff), n, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD);
+    return ret;
 }
 
 MPI_Status
