@@ -122,7 +122,7 @@ main(int argc, char** argv) {
     if (myrank == 0) {
         // Master Process
         // Read data
-#if 0
+#if 1
         long long int n;
         scanf("%lld", &n);
         std::vector<data_t> a(n);
