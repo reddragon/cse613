@@ -81,21 +81,52 @@ pivot_selection_slave(size_t l, data_t *A, int npivots) {
 void
 dsort_slave(int r, int q) {
     MPI_Status ms;
-    // Receive its share of the work
-    // Receive the size of the array that is going to be received
     vector<data_t> buffer;
+
+    // Receive its share of the work
     MPI_receive_data_t_array(buffer, 0);
-    
+
     data_t* A = &*buffer.begin();
 
     // Do pivot_selection
     vector<data_t>* pivots = pivot_selection_slave(buffer.size(), A, q-1);
+    // Post-Condition: A is not sorted!
 
-    // Send pivots across
-    // Receive global pivots
-    // Do local bucketing
-    // Distribute local buckets
-    // delete[] pivots;
+    // Send pivots across to master
+    MPI_Send((void*)(&*pivots.begin()), pivots.size(), MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD);
+
+    // Receive global pivots from master
+    MPI_Status ms;
+    pivots->resize(p);
+    MPI_Recv(&*pivots->begin(), p-1, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD, &ms);
+    (*pivots)[p-1] = buffer.back() + 1;
+
+    // Do local bucketing & Distribute local buckets
+    std::vector<MPI_Request> requests(p);
+    data_t *f = NULL, *l = NULL;
+    data_t *start = A;
+    for (int i = 0; i < p; ++i) {
+        data_t *pos = std::lower_bound(A, A + buffer.size(), (*pivots)[0]);
+        if (p == r) {
+            f = start;
+            l = pos;
+        } else {
+            long long int count = pos-start;
+            MPI_send(&count, 1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD);
+            MPI_Isend(start, (pos - start), MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &requests[i]);
+        }
+        start = pos;
+    }
+
+    // Receive keys from p-1 different processes.
+    for (int i = 0; i < p-1; ++i) {
+    }
+
+    // Wait for all senders to have completed.
+    vector<MPI_Status> statuses(p);
+    MPI_Waitall(requests.size(), &*requests.begin(), &*statuses.begin());
+
+    delete pivots;
 }
 
 void
