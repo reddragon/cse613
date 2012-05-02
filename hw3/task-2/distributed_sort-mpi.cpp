@@ -49,7 +49,7 @@ MPI_receive_data_t_array(vector<data_t> &buff, int rank) {
     MPI_Recv(&count, 1, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD, &ms);
     
     buff.resize(count);
-    data_t* A = &*buffer.begin();
+    data_t* A = &*buff.begin();
     MPI_Recv(A, count, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD, &ms);
     return ms;
 }
@@ -65,7 +65,7 @@ pivot_selection_slave(size_t l, data_t *A, int npivots) {
     */
 
     // Use Shared-Memory Sort
-    parallel_randomized_looping_quicksort_CPP(&*(pivots.begin()), 0, pivots.size());
+    parallel_randomized_looping_quicksort_CPP(A, 0, l-1);
 
     std::vector<data_t> *ret = new std::vector<data_t>;
     int jmp = l/npivots;
@@ -117,14 +117,14 @@ dsort_master(vector<data_t> &A, int p, int q) {
         data_t *buff = &*A.begin();
 
         // Send array from A[from] to A[upto] (both inclusive)
-        MPI_send_data_t_array(count, (void*)(buff + from), i);
+        MPI_send_data_t_array(count, (buff + from), i);
 
         // printf("Sent %d elements from %d to %d to processor %d\n", count, from, upto, i);
         cur += share;
     }
 
     // Computing pivots for my own part
-    vector<data_t>* pivots = pivot_selection((size_t)share, &*A.begin(), q);
+    vector<data_t>* pivots = pivot_selection_slave((size_t)share, &*A.begin(), q);
 
     // Receive pivots
     for (int i = 1; i < p; i++) {
