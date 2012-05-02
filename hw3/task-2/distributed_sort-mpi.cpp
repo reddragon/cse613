@@ -32,22 +32,47 @@ sample_input(I1 s1, I1 e1, I2 s2, I2 e2) {
     }
 }
 
+int
+MPI_send_data_t_array(long long int n, data_t *buff, int rank) {
+    int ret;
+    ret = MPI_Send(&n, 1, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD);
+
+    // Send buffer
+    ret = MPI_Send((void*)(buff), n, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD);
+    return ret;
+}
+
+MPI_Status
+MPI_receive_data_t_array(vector<data_t> &buff, int rank) {
+    long long int count;
+    MPI_Status ms;
+    MPI_Recv(&count, 1, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD, &ms);
+    
+    buff.resize(count);
+    data_t* A = &*buff.begin();
+    MPI_Recv(A, count, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD, &ms);
+    return ms;
+}
+
 vector<data_t>*
-pivot_selection(size_t l, data_t *A, int npivots) {
+pivot_selection_slave(size_t l, data_t *A, int npivots) {
+
+    /*
     size_t rsz = 12 * log(l);
     rsz = rsz >= l ? l : rsz;
     vector<data_t> pivots(rsz);
     sample_input(A, A+l, pivots.begin(), pivots.end());
+    */
 
     // Use Shared-Memory Sort
-    parallel_randomized_looping_quicksort_CPP(&*(pivots.begin()), 0, pivots.size());
+    parallel_randomized_looping_quicksort_CPP(A, 0, l-1);
 
     std::vector<data_t> *ret = new std::vector<data_t>;
     int jmp = l/npivots;
 
     jmp = jmp < 1 ? 1 : jmp;
     for (int i = 0; i < l; i += jmp) {
-        ret->push_back(pivots[i]);
+        ret->push_back(A[i]);
     }
 
     return ret;
@@ -88,17 +113,13 @@ dsort_slave(int r, int q) {
     MPI_Status ms;
     // Receive its share of the work
     // Receive the size of the array that is going to be received
-    // TODO: Do we really need to do this?
-    long long int count;
-    MPI_Recv(&count, 1, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD, &ms);
+    vector<data_t> buffer;
+    MPI_receive_data_t_array(buffer, 0);
     
-    vector<data_t> buffer(count);
     data_t* A = &*buffer.begin();
-    MPI_Recv(A, count, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD, &ms);
 
-    // TODO:
     // Do pivot_selection
-    vector<data_t>* pivots = pivot_selection(count, A, q);
+    vector<data_t>* pivots = pivot_selection_slave(buffer.size(), A, q);
 
     // Send pivots across
     // Receive global pivots
@@ -123,20 +144,18 @@ dsort_master(vector<data_t> &A, int p, int q) {
         long long int count = upto - from + 1;
         keys_with[i] = count;
 
-        // Send the size of the array being sent. 
-        // TODO: Do we really need to send this?
-        MPI_Send(&count, 1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD);
-
         data_t *buff = &*A.begin();
+
         // Send array from A[from] to A[upto] (both inclusive)
-        MPI_Send((void*)(buff + from), count, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD);
+        MPI_send_data_t_array(count, (buff + from), i);
+
         // printf("Sent %d elements from %d to %d to processor %d\n", count, from, upto, i);
         cur += share;
     }
 
     // Number of pivots that I will have
     keys_with[0] = (size_t)share;
-    
+   
     pivot_selection_master(n, &(*A.begin()), p, q);
 
     // TODO
