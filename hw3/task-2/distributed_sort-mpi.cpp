@@ -1,6 +1,7 @@
 #include <mpi.h>
 #include <stdlib.h>
 #include <math.h>
+#include <assert.h>
 #include <vector>
 #include <algorithm>
 #include <map>
@@ -19,6 +20,7 @@ template <typename I1, typename I2>
 void
 sample_input(I1 s1, I1 e1, I2 s2, I2 e2) {
     size_t sz = e1 - s1;
+    assert(sz > 2*(e2-s2));
     std::map<int, int> m;
     while (s2 != e2) {
         size_t ri = rand() % sz;
@@ -75,22 +77,23 @@ dsort_slave(int r, int q) {
 }
 
 void
-dsort_master(int n, data_t* A, int p, int q) {
+dsort_master(vector<data_t> &A, int p, int q) {
     // Distribute work
     // Trying to distribute as evenly as possible.
+    int n = A.size();
     double share = n * 1.0 / p, cur = 0;
     MPI_Status ms;
 
     for (int i = 1; i < p; i++) {
         int from = (int)cur, upto = (i == p-1 ? n - 1 : (int)(cur + share - 1));
-        int count = upto - from + 1;
+        long long int count = upto - from + 1;
         
         // Send the size of the array being sent. 
         // TODO: Do we really need to send this?
-        MPI_Send(&count, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
+        MPI_Send(&count, 1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD);
 
         // Send array from A[from] to A[upto] (both inclusive)
-        MPI_Send((void*)(A + from), count, MPI_INT, i, 0, MPI_COMM_WORLD);
+        MPI_Send((void*)(A + from), count, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD);
         // printf("Sent %d elements from %d to %d to processor %d\n", count, from, upto, i);
         cur += share;
     }
@@ -112,23 +115,24 @@ main(int argc, char** argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &p);
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
     
-    // TODO: This can be tuned.
+    // FIXME: This NEEDS to be tuned.
     q = 4;
-        
+
     if (myrank == 0) {
         // Master Process
         // Read data
 #if 0
         long long int n;
         scanf("%lld", &n);
-        std::vector<long long int> a(n);
+        std::vector<data_t> a(n);
         for (long long int i = 0; i < n; ++i) {
             scanf("%lld", &a[i]);
         }
 
         Timer t;
         t.start();
-        // Call to start work. dsort_master()
+        // Call to start work.
+        dsort_master(a, p, q);
         double total_sec = t.stop();
 
         for (long long int i = 0; i < n; ++i) {
