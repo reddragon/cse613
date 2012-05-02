@@ -72,7 +72,12 @@ main(int argc, char** argv) {
     if (myrank == 0) {
         // Master Process
         // Read data
-        
-    }
+        int* A = new int[100];
+        for (int i = 0; i < 100; i++) {
+            A[i] = i;
+        }
+        dsort_master(100, A, p, 4);
+    } else
+        dsort_slave(myrank);
     MPI_Finalize();
 }
