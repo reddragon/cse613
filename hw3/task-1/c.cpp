@@ -10,10 +10,6 @@
 
 using namespace std;
 
-#if defined PARTE
-#define PARTITION_FOR for
-#endif
-
 extern size_t base_size;
 
 int
