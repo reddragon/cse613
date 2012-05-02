@@ -14,7 +14,7 @@ extern "C++" void parallel_randomized_looping_quicksort_CPP(long long int *a, si
 typedef long long int data_t;
 
 data_t*
-pivot_selection(size_t l, data_t *A) {
+pivot_selection(size_t l, data_t *A, int q) {
     size_t rsz = 12 * log(l);
     data_t *ret = new data_t[rsz];
     for (size_t i = 0; i < rsz; i++) {
@@ -41,7 +41,7 @@ dsort_slave(int r, int q) {
 
     // TODO:
     // Do pivot_selection
-    data_t* pivots = pivot_selection(count, A);
+    data_t* pivots = pivot_selection(count, A, q);
 
     // Send pivots across
     // Receive global pivots
@@ -72,7 +72,7 @@ dsort_master(int n, data_t* A, int p, int q) {
     }
 
     // Computing pivots for my own part
-    data_t* pivots = pivot_selection((int)share, A);
+    data_t* pivots = pivot_selection((int)share, A, q);
 
     // TODO
     // Receive pivots
@@ -88,15 +88,18 @@ main(int argc, char** argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &p);
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
     
+    // TODO: This can be tuned.
+    q = 4;
+        
     if (myrank == 0) {
         // Master Process
         // Read data
-        int* A = new int[100];
+        data_t* A = new data_t[100];
         for (int i = 0; i < 100; i++) {
             A[i] = 100-i;
         }
-        dsort_master(100, A, p, 4);
+        dsort_master(100, A, p, q);
     } else
-        dsort_slave(myrank);
+        dsort_slave(myrank, q);
     MPI_Finalize();
 }
