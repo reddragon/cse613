@@ -13,16 +13,18 @@ extern "C++" void parallel_randomized_looping_quicksort_CPP(long long int *a, si
 
 typedef long long int data_t;
 
-data_t*
+vector<data_t>*
 pivot_selection(size_t l, data_t *A) {
     size_t rsz = 12 * log(l);
-    data_t *ret = new data_t[rsz];
+    vector<data_t> *ret = new vector<data_t>(rsz);
     for (size_t i = 0; i < rsz; i++) {
-        ret[i] = A[rand() % l];
+        (*ret)[i] = A[rand() % l];
     }
 
     // Use Shared-Memory Sort
-    parallel_randomized_looping_quicksort_CPP(ret, 0, rsz-1);
+    parallel_randomized_looping_quicksort_CPP(&*(ret->begin()), 0, ret->size());
+    vector<data_t>::iterator end = unique(ret);
+    ret->erase(end, ret->end());
     return ret;
 }
 
@@ -41,7 +43,7 @@ dsort_slave(int r, int q) {
 
     // TODO:
     // Do pivot_selection
-    data_t* pivots = pivot_selection(count, A);
+    vector<data_t>* pivots = pivot_selection(count, A);
 
     // Send pivots across
     // Receive global pivots
@@ -72,7 +74,7 @@ dsort_master(int n, data_t* A, int p, int q) {
     }
 
     // Computing pivots for my own part
-    data_t* pivots = pivot_selection((int)share, A);
+    vector<data_t>* pivots = pivot_selection((int)share, A);
 
     // TODO
     // Receive pivots
