@@ -84,11 +84,15 @@ dsort_master(vector<data_t> &A, int p, int q) {
     int n = A.size();
     double share = n * 1.0 / p, cur = 0;
     MPI_Status ms;
+    // Number of keys with each of the p processes
+    // Doing this to avoid having to receive the count again
+    vector<int> keys_with(p);
 
     for (int i = 1; i < p; i++) {
         int from = (int)cur, upto = (i == p-1 ? n - 1 : (int)(cur + share - 1));
         long long int count = upto - from + 1;
-        
+        keys_with[i] = count;
+
         // Send the size of the array being sent. 
         // TODO: Do we really need to send this?
         MPI_Send(&count, 1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD);
@@ -103,8 +107,12 @@ dsort_master(vector<data_t> &A, int p, int q) {
     // Computing pivots for my own part
     vector<data_t>* pivots = pivot_selection((int)share, A, q);
 
-    // TODO
     // Receive pivots
+    for (int i = 1; i < p; i++) {
+    
+    }
+
+    // TODO
     // Compute global pivots
     // Send global pivots
     // Final collection
