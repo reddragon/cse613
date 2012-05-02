@@ -1,6 +1,9 @@
 #include <mpi.h>
 #include <stdlib.h>
 #include <math.h>
+#include <vector>
+
+using namespace std;
 
 // TODO:
 // All sends are receives are blocking for now
