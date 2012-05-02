@@ -102,10 +102,23 @@ pivot_selection_master(int n, data_t *A, int p, int q) {
         delete[] sp;
     }
     
-    // TODO
     // Sort the pivots received so far
+    int l = (int)(pivots->size());
+    parallel_randomized_looping_quicksort_CPP(&(*pivots->begin()), (size_t)0, (size_t)(l-1));
+    
+    std::vector<data_t> *ret = new std::vector<data_t>;
+    int jmp = l/(p-1);
 
-    return NULL;
+    jmp = jmp < 1 ? 1 : jmp;
+    for (int i = 0; i < l; i += jmp) {
+        ret->push_back(*(pivots->begin()+i));
+    }
+
+    return ret;
+}
+
+void
+send_global_pivots(vector<data_t> *global_pivots, int p) {
 }
 
 void
@@ -156,11 +169,12 @@ dsort_master(vector<data_t> &A, int p, int q) {
     // Number of pivots that I will have
     keys_with[0] = (size_t)share;
    
-    pivot_selection_master(n, &(*A.begin()), p, q);
+   // Compute global pivots
+    std::vector<data_t> *global_pivots = pivot_selection_master(n, &(*A.begin()), p, q);
 
-    // TODO
-    // Compute global pivots
     // Send global pivots
+    send_global_pivots(global_pivots, p);
+
     // Final collection
 }
 
