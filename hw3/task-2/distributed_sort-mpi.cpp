@@ -1,18 +1,25 @@
 #include <mpi.h>
 #include <stdlib.h>
+#include <string.h>
 
 // TODO:
 // All sends are receives are blocking for now
 // Replace by non-blocking ones.
 
+int
+cmp (const void* a, const void* b) {
+    return (*((int*)a) > *(int*)b);
+}
+
 int*
 pivot_selection(int l, int* A) {
+    // TODO Later replace by the Shared-Memory Sort
+    qsort((void*)A, l, sizeof(int), &cmp);
+    
+    printf("-> ");
     for (int i = 0; i < l; i++)
         printf("%d ", A[i]);
-    printf("\n");
-    
-    // TODO Later replace by the Shared-Memory Sort
-    qsort();
+    printf(" <-\n");
     return NULL;
 }
 
@@ -47,7 +54,7 @@ dsort_master(int n, int* A, int p, int q) {
     MPI_Status ms;
 
     for (int i = 1; i < p; i++) {
-        int from = (int)cur, upto = (i == p-1 ? n - 1 : (int)(cur + share));
+        int from = (int)cur, upto = (i == p-1 ? n - 1 : (int)(cur + share - 1));
         int count = upto - from + 1;
         
         // Send the size of the array being sent. 
@@ -56,7 +63,7 @@ dsort_master(int n, int* A, int p, int q) {
 
         // Send array from A[from] to A[upto] (both inclusive)
         MPI_Send((void*)(A + from), count, MPI_INT, i, 0, MPI_COMM_WORLD);
-        printf("Sent %d elements from %d to %d to processor %d\n", count, from, upto, i);
+        // printf("Sent %d elements from %d to %d to processor %d\n", count, from, upto, i);
         cur += share;
     }
 
@@ -76,13 +83,13 @@ main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &p);
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
-
+    
     if (myrank == 0) {
         // Master Process
         // Read data
         int* A = new int[100];
         for (int i = 0; i < 100; i++) {
-            A[i] = i;
+            A[i] = 100-i;
         }
         dsort_master(100, A, p, 4);
     } else
