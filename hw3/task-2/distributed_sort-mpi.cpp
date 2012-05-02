@@ -24,7 +24,7 @@ pivot_selection(size_t l, data_t *A, int q) {
 
     // Use Shared-Memory Sort
     parallel_randomized_looping_quicksort_CPP(&*(ret->begin()), 0, ret->size());
-    vector<data_t>::iterator end = unique(ret);
+    vector<data_t>::iterator end = unique(ret.begin(), ret.end());
     ret->erase(end, ret->end());
     return ret;
 }
