@@ -72,8 +72,8 @@ dsort_master(int n, int* A, int p, int q) {
     }
 
     // Computing pivots for my own part
-    int* pivots = pivot_selection((int)share, A);
-    
+    data_t* pivots = pivot_selection((int)share, A);
+
     // TODO
     // Receive pivots
     // Compute global pivots
