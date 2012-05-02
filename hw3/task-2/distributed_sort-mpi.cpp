@@ -48,7 +48,8 @@ dsort_master(int n, int* A, int p, int q) {
         MPI_Send(&count, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
 
         // Send array from A[from] to A[upto] (both inclusive)
-        MPI_Send((void*)A, count, MPI_INT, i, 0, MPI_COMM_WORLD);
+        MPI_Send((void*)(A + from), count, MPI_INT, i, 0, MPI_COMM_WORLD);
+        printf("Sent %d elements from %d to %d to processor %d\n", count, from, upto, i);
     }
 
     // Computing pivots for my own part
@@ -67,7 +68,6 @@ main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &p);
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
-    printf("My rank is %d/%d\n", myrank, p);
 
     if (myrank == 0) {
         // Master Process
