@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <map>
+#include "../task-1/timer.hpp"
 
 using namespace std;
 
@@ -67,7 +68,7 @@ dsort_slave(int r, int q) {
 
     // TODO:
     // Do pivot_selection
-    vector<data_t>* pivots = pivot_selection(count, A, q);
+    vector<data_t>* pivots = pivot_selection(count, A, npivots);
 
     // Send pivots across
     // Receive global pivots
