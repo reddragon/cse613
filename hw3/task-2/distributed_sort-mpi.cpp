@@ -89,7 +89,7 @@ dsort_slave(int r, int q) {
     data_t* A = &*buffer.begin();
 
     // Do pivot_selection
-    vector<data_t>* pivots = pivot_selection_slave(count, A, q);
+    vector<data_t>* pivots = pivot_selection_slave(buffer.size(), A, q);
 
     // Send pivots across
     // Receive global pivots
