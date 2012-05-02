@@ -1,5 +1,6 @@
 #include <mpi.h>
 #include <stdlib.h>
+#include <math.h>
 
 // TODO:
 // All sends are receives are blocking for now
@@ -9,16 +10,17 @@ extern "C++" void parallel_randomized_looping_quicksort_CPP(long long int *a, si
 
 typedef long long int data_t
 
-int*
+data_t*
 pivot_selection(size_t l, data_t *A) {
-    for (size_t i = 0; i < l; i++) {
-        printf("%d ", A[i]);
+    size_t rsz = 12 * log(l);
+    data_t *ret = new data_t[rsz];
+    for (size_t i = 0; i < rsz; i++) {
+        ret[i] = A[rand() % l];
     }
-    printf("\n");
 
     // Use Shared-Memory Sort
-    parallel_randomized_looping_quicksort_CPP(A, 0, l-1);
-    return NULL;
+    parallel_randomized_looping_quicksort_CPP(ret, 0, rsz-1);
+    return ret;
 }
 
 void
@@ -30,13 +32,13 @@ dsort_slave(int r) {
     long long int count;
     MPI_Recv(&count, 1, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD, &ms);
     
-    vector<long long int> buffer(count);
-    long long int* A = &*buffer.begin();
+    vector<data_t> buffer(count);
+    data_t* A = &*buffer.begin();
     MPI_Recv(A, count, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD, &ms);
 
     // TODO:
     // Do pivot_selection
-    long long int* pivots = pivot_selection(count, A);
+    data_t* pivots = pivot_selection(count, A);
 
     // Send pivots across
     // Receive global pivots
