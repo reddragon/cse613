@@ -74,6 +74,15 @@ We can see that the best running time is with a base case of \texttt{4096} eleme
 
 \subsection{Parallel Quicksort from part(c) when run on a single core and on all cores}
 
+\begin{center}
+  \begin{tabular}{| l | r | r | r | r | r | r |}
+    \hline
+    Test \# & 01 & 02 & 03 & 04 & 05 & 06 \\ \hline
+    Serial (sec)           & 0.32 & 5.08 & 33.08 & 39.93 & 58.12 & 69.56 \\ \hline
+    Parallel (sec)/speedup & 0.21/65\% & 3.08/61\% & 16.56/50\% & 17.28/43\% & 21.40/37\% & 42.39/61\% \\ \hline
+  \end{tabular}
+\end{center}
+
 \subsection{Parallel Quicksort with Serial Partition}
 
 \begin{center}
