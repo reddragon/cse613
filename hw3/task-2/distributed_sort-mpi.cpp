@@ -24,7 +24,7 @@ pivot_selection(size_t l, data_t *A) {
 }
 
 void
-dsort_slave(int r) {
+dsort_slave(int r, int q) {
     MPI_Status ms;
     // Receive its share of the work
     // Receive the size of the array that is going to be received
@@ -55,7 +55,7 @@ dsort_master(int n, int* A, int p, int q) {
     MPI_Status ms;
 
     for (int i = 1; i < p; i++) {
-        int from = (int)cur, upto = (i == p-1 ? n - 1 : (int)(cur + share));
+        int from = (int)cur, upto = (i == p-1 ? n - 1 : (int)(cur + share - 1));
         int count = upto - from + 1;
         
         // Send the size of the array being sent. 
@@ -64,7 +64,7 @@ dsort_master(int n, int* A, int p, int q) {
 
         // Send array from A[from] to A[upto] (both inclusive)
         MPI_Send((void*)(A + from), count, MPI_INT, i, 0, MPI_COMM_WORLD);
-        printf("Sent %d elements from %d to %d to processor %d\n", count, from, upto, i);
+        // printf("Sent %d elements from %d to %d to processor %d\n", count, from, upto, i);
         cur += share;
     }
 
@@ -80,17 +80,17 @@ dsort_master(int n, int* A, int p, int q) {
 
 int 
 main(int argc, char** argv) {
-    int p, myrank;
+    int p, q, myrank;
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &p);
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
-
+    
     if (myrank == 0) {
         // Master Process
         // Read data
         int* A = new int[100];
         for (int i = 0; i < 100; i++) {
-            A[i] = i;
+            A[i] = 100-i;
         }
         dsort_master(100, A, p, 4);
     } else
