@@ -6,9 +6,10 @@ pivot_selection(int l, int* A) {
     for (int i = 0; i < l; i++)
         printf("%d ", A[i]);
     printf("\n");
+    return NULL;
 }
 
-int 
+void
 dsort_slave(int r) {
     MPI_Status ms;
     // Receive its share of the work
@@ -31,7 +32,7 @@ dsort_slave(int r) {
     delete A;
 }
 
-int
+void
 dsort_master(int n, int* A, int p, int q) {
     // Distribute work
     // Trying to distribute as evenly as possible.
@@ -44,10 +45,10 @@ dsort_master(int n, int* A, int p, int q) {
         
         // Send the size of the array being sent. 
         // TODO: Do we really need to send this?
-        MPI_Send(&count, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &ms);
+        MPI_Send(&count, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
 
         // Send array from A[from] to A[upto] (both inclusive)
-        MPI_Send((void*)A, count, MPI_INT, i, 0, MPI_COMM_WORLD, &ms);
+        MPI_Send((void*)A, count, MPI_INT, i, 0, MPI_COMM_WORLD);
     }
 
     // Computing pivots for my own part
