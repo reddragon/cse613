@@ -92,8 +92,9 @@ dsort_master(vector<data_t> &A, int p, int q) {
         // TODO: Do we really need to send this?
         MPI_Send(&count, 1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD);
 
+        data_t *buff = &*A.begin();
         // Send array from A[from] to A[upto] (both inclusive)
-        MPI_Send((void*)(A + from), count, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD);
+        MPI_Send((void*)(buff + from), count, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD);
         // printf("Sent %d elements from %d to %d to processor %d\n", count, from, upto, i);
         cur += share;
     }
