@@ -3,6 +3,7 @@
 #include <math.h>
 #include <vector>
 #include <algorithm>
+#include <map>
 
 using namespace std;
 
@@ -14,18 +15,33 @@ extern "C++" void parallel_randomized_looping_quicksort_CPP(long long int *a, si
 
 typedef long long int data_t;
 
+template <typename I1, typename I2>
+void
+sample_input(I1 s1, I1 e1, I2 s2, I2 e2) {
+    size_t sz = e1 - s1;
+    std::map<int, int> m;
+    while (s2 != e2) {
+        size_t ri = rand() % sz;
+        if (m[ri] == 0) {
+            m[ri] = 1;
+            *s2++ = s1[ri];
+        }
+    }
+}
+
 vector<data_t>*
 pivot_selection(size_t l, data_t *A, int npivots) {
     size_t rsz = 12 * log(l);
     rsz = rsz >= l ? l : rsz;
     vector<data_t> pivots(rsz);
-    std::random_sample(A, A+l, pivots.begin(), pivots.end());
+    sample_input(A, A+l, pivots.begin(), pivots.end());
 
     // Use Shared-Memory Sort
     parallel_randomized_looping_quicksort_CPP(&*(pivots.begin()), 0, pivots.size());
 
-    std::vector<data_t> *ret = new std::vector<data*>;
+    std::vector<data_t> *ret = new std::vector<data_t*>;
     int jmp = l/npivots;
+
     jmp = jmp < 1 ? 1 : jmp;
     for (int i = 0; i < l; i += jmp) {
         ret->push_back(pivots[i]);
