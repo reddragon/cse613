@@ -23,7 +23,7 @@ pivot_selection(size_t l, data_t *A) {
 }
 
 void
-dsort_slave(int r) {
+dsort_slave(int r, int q) {
     MPI_Status ms;
     // Receive its share of the work
     // Receive the size of the array that is going to be received
@@ -79,7 +79,7 @@ dsort_master(int n, int* A, int p, int q) {
 
 int 
 main(int argc, char** argv) {
-    int p, myrank;
+    int p, q, myrank;
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &p);
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
