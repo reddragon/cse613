@@ -26,6 +26,10 @@ size_t base_size = 4;
 #define dprintf(ARGS...)
 #endif
 
+#if defined PARTE
+#define PARTITION_FOR for
+#endif
+
 
 // a: The array to compute PPC on
 // size: The number of elements in a
