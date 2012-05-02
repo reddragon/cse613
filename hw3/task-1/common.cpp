@@ -1,4 +1,3 @@
-#undef __x86_64__
 #include "common.hpp"
 #include <cilk.h>
 
