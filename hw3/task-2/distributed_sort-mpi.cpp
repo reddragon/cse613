@@ -105,10 +105,15 @@ dsort_master(vector<data_t> &A, int p, int q) {
     int n = A.size();
     double share = n * 1.0 / p, cur = 0;
     MPI_Status ms;
+    // Number of keys with each of the p processes
+    // Doing this to avoid having to receive the count again
+    vector<int> keys_with(p);
 
     for (int i = 1; i < p; i++) {
         int from = (int)cur, upto = (i == p-1 ? n - 1 : (int)(cur + share - 1));
         long long int count = upto - from + 1;
+        keys_with[i] = count;
+
         data_t *buff = &*A.begin();
 
         // Send array from A[from] to A[upto] (both inclusive)
@@ -121,8 +126,12 @@ dsort_master(vector<data_t> &A, int p, int q) {
     // Computing pivots for my own part
     vector<data_t>* pivots = pivot_selection((size_t)share, &*A.begin(), q);
 
-    // TODO
     // Receive pivots
+    for (int i = 1; i < p; i++) {
+    
+    }
+
+    // TODO
     // Compute global pivots
     // Send global pivots
     // Final collection
