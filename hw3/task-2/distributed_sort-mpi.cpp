@@ -6,20 +6,19 @@
 // All sends are receives are blocking for now
 // Replace by non-blocking ones.
 
-int
-cmp (const void* a, const void* b) {
-    return (*((int*)a) > *(int*)b);
-}
+extern "C++" void parallel_randomized_looping_quicksort_CPP(long long int *a, size_t q, size_t r);
+
+typedef long long int data_t
 
 int*
-pivot_selection(int l, int* A) {
-    // TODO Later replace by the Shared-Memory Sort
-    qsort((void*)A, l, sizeof(int), &cmp);
-    
-    printf("-> ");
-    for (int i = 0; i < l; i++)
+pivot_selection(size_t l, data_t *A) {
+    for (size_t i = 0; i < l; i++) {
         printf("%d ", A[i]);
-    printf(" <-\n");
+    }
+    printf("\n");
+
+    // Use Shared-Memory Sort
+    parallel_randomized_looping_quicksort_CPP(A, 0, l-1);
     return NULL;
 }
 
@@ -29,21 +28,22 @@ dsort_slave(int r) {
     // Receive its share of the work
     // Receive the size of the array that is going to be received
     // TODO: Do we really need to do this?
-    int count;
-    MPI_Recv(&count, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &ms);
+    long long int count;
+    MPI_Recv(&count, 1, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD, &ms);
     
-    int* A = new int[count];
-    MPI_Recv(A, count, MPI_INT, 0, 0, MPI_COMM_WORLD, &ms);
+    vector<long long int> buffer(count);
+    long long int* A = &*buffer.begin();
+    MPI_Recv(A, count, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD, &ms);
 
     // TODO:
     // Do pivot_selection
-    int* pivots = pivot_selection(count, A);
+    long long int* pivots = pivot_selection(count, A);
 
     // Send pivots across
     // Receive global pivots
     // Do local bucketing
     // Distribute local buckets
-    delete[] A;
+    // delete[] pivots;
 }
 
 void
