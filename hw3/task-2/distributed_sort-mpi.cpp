@@ -101,7 +101,7 @@ dsort_master(vector<data_t> &A, int p, int q) {
     }
 
     // Computing pivots for my own part
-    vector<data_t>* pivots = pivot_selection((size_t)share, buff, q);
+    vector<data_t>* pivots = pivot_selection((size_t)share, &*A.begin(), q);
 
     // TODO
     // Receive pivots
