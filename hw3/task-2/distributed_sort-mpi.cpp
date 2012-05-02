@@ -51,7 +51,7 @@ dsort_slave(int r, int q) {
 }
 
 void
-dsort_master(int n, int* A, int p, int q) {
+dsort_master(int n, data_t* A, int p, int q) {
     // Distribute work
     // Trying to distribute as evenly as possible.
     double share = n * 1.0 / p, cur = 0;
