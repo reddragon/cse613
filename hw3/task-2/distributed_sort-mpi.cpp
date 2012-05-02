@@ -43,7 +43,7 @@ dsort_slave(int r) {
     // Receive global pivots
     // Do local bucketing
     // Distribute local buckets
-    delete A;
+    delete[] A;
 }
 
 void
