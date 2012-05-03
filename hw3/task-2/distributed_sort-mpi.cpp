@@ -161,14 +161,29 @@ dsort_slave(int r, int p, int q) {
     }
 
     // Receive keys from p-1 different processes.
-    for (int i = 0; i < p-1; ++i) {
+    std::vector<data_t> toMerge;
+    for (int i = 0; i < p; ++i) {
+        if (i != r) {
+            std::vector<data_t> buff;
+            MPI_receive_data_t_array(buff, i);
+            toMerge.insert(toMerge.end(), buff.begin(), buff.end());
+        } else {
+            toMerge.insert(toMerge.end(), f, l);
+        }
     }
+
+    // Sort all the data using parallel shared memory sorting routine.
+    parallel_randomized_looping_quicksort_CPP(&*toMerge.begin(), 0, toMerge.size() - 1);
 
     // Wait for all senders to have completed.
     vector<MPI_Status> statuses(p);
     MPI_Waitall(requests.size(), &*requests.begin(), &*statuses.begin());
 
-    delete pivots;
+    // Now, send out the sorted data to the master process.
+    MPI_send_data_t_array(toMerge.size(), &*toMerge.begin(), 0);
+
+    // We need not delete pivots since it will be collected on process exit.
+    // delete pivots;
 }
 
 void
