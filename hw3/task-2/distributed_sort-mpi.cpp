@@ -90,18 +90,16 @@ pivot_selection_master(int n, data_t *A, int p, int q) {
 
     for (int i = 1; i < p; i++) {
         // Receive keys_with[i] pivots from each process
-        std::vector<data_t>* sp = new std::vector<data_t>;
-        sp->resize((size_t)(q-1));
-        data_t* B = &*(sp->begin());
+        std::vector<data_t> sp;
+        sp.resize(q-1);
+        data_t* B = &*(sp.begin());
 
         // Fetch the pivots from the slave
         MPI_Recv(B, q-1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &ms);
         // Append to the pivots received so far
-        pivots->insert(pivots->end(), sp->begin(), sp->end());
-        // Dispose
-        delete sp;
+        pivots->insert(pivots->end(), sp.begin(), sp.end());
     }
-    
+
     // Sort the pivots received so far
     int l = (int)(pivots->size());
     parallel_randomized_looping_quicksort_CPP(&(*pivots->begin()), (size_t)0, (size_t)(l-1));
