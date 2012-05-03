@@ -119,6 +119,9 @@ pivot_selection_master(int n, data_t *A, int p, int q) {
 
 void
 send_global_pivots(vector<data_t> *global_pivots, int p) {
+    for (int i = 1; i < p; i++) {
+        MPI_send_data_t_array(p-1, &(*global_pivots->begin()), i);   
+    }
 }
 
 void
