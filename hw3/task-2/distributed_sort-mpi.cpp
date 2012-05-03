@@ -17,6 +17,10 @@ extern "C++" void parallel_randomized_looping_quicksort_CPP(long long int *a, si
 
 typedef long long int data_t;
 
+int RANK = -1;
+
+#define dprintf(FMT,ARGS) fprintf(stderr, "%d::" FMT, RANK, ARGS);
+
 template <typename I1, typename I2>
 void
 sample_input(I1 s1, I1 e1, I2 s2, I2 e2) {
@@ -34,6 +38,7 @@ sample_input(I1 s1, I1 e1, I2 s2, I2 e2) {
 
 int
 MPI_send_data_t_array(long long int n, data_t *buff, int rank) {
+    dprintf("n: %d, buff: %p\n", n, buff);
     int ret;
     ret = MPI_Send(&n, 1, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD);
 
