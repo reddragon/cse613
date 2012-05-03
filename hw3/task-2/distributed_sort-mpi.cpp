@@ -99,7 +99,7 @@ pivot_selection_master(int n, data_t *A, int p, int q) {
         // Append to the pivots received so far
         pivots->insert(pivots->end(), sp->begin(), sp->end());
         // Dispose
-        delete[] sp;
+        delete sp;
     }
     
     // Sort the pivots received so far
