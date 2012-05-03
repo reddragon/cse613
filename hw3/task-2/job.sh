@@ -3,7 +3,7 @@
 #$ -V
 #$ -cwd
 #$ -q development
-#$ -pe 8way 48
+#$ -pe 12way 36
 #$ -N MPI
 #$ -o output-$JOB_NAME
 #$ -e error-$JOB_NAME
