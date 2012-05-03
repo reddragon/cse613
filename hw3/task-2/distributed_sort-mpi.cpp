@@ -19,7 +19,7 @@ typedef long long int data_t;
 
 int RANK = -1;
 
-#define dprintf(FMT,ARGS) fprintf(stderr, "%d::" FMT, RANK, ARGS);
+#define dprintf(FMT,ARGS...) fprintf(stderr, "%d::" FMT, RANK, ARGS);
 
 template <typename I1, typename I2>
 void
