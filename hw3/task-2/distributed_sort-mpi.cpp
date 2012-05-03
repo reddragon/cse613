@@ -207,6 +207,7 @@ dsort_slave(int r, int p, int q) {
 
 void
 dsort_master(vector<data_t> &A, int p, int q) {
+    dprintf("dsort_master(A.size(): %d, p: %d, q: %d)\n", A.size(), p, q);
     // Distribute work
     // Trying to distribute as evenly as possible.
     int n = A.size();
@@ -276,8 +277,13 @@ main(int argc, char** argv) {
 
         Timer t;
         t.start();
-        // Call to start work.
-        dsort_master(a, p, q);
+        if (p == 1) {
+            parallel_randomized_looping_quicksort_CPP(&*a.begin(), 0, a.size() - 1);
+        } else {
+            // Call to start work.
+            dsort_master(a, p, q);
+        }
+
         double total_sec = t.stop();
 
         for (long long int i = 0; i < n; ++i) {
