@@ -122,7 +122,7 @@ send_global_pivots(vector<data_t> *global_pivots, int p) {
 }
 
 void
-dsort_slave(int r, int q) {
+dsort_slave(int r, int p, int q) {
     MPI_Status ms;
     vector<data_t> buffer;
 
@@ -136,10 +136,9 @@ dsort_slave(int r, int q) {
     // Post-Condition: A is not sorted!
 
     // Send pivots across to master
-    MPI_Send((void*)(&*pivots.begin()), pivots.size(), MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD);
+    MPI_Send((void*)(&*pivots->begin()), pivots->size(), MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD);
 
     // Receive global pivots from master
-    MPI_Status ms;
     pivots->resize(p);
     MPI_Recv(&*pivots->begin(), p-1, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD, &ms);
     (*pivots)[p-1] = buffer.back() + 1;
@@ -155,7 +154,7 @@ dsort_slave(int r, int q) {
             l = pos;
         } else {
             long long int count = pos-start;
-            MPI_send(&count, 1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD);
+            MPI_Send(&count, 1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD);
             MPI_Isend(start, (pos - start), MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &requests[i]);
         }
         start = pos;
@@ -248,7 +247,8 @@ main(int argc, char** argv) {
         }
         dsort_master(100, A, p, q);
 #endif 
-     } else
-        dsort_slave(myrank, q);
+    } else {
+      dsort_slave(myrank, p, q);
+    }
     MPI_Finalize();
 }
