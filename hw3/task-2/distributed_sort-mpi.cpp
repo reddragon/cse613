@@ -140,7 +140,8 @@ dsort_slave(int r, int p, int q) {
     // Do pivot_selection
     vector<data_t>* pivots = pivot_selection_slave(buffer.size(), A, q-1);
     // Post-Condition: A is not sorted!
-
+    dprintf("pivots: %p\n", pivots);
+    
     // Send pivots across to master
     MPI_Send((void*)(&*pivots->begin()), pivots->size(), MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD);
 
@@ -148,6 +149,7 @@ dsort_slave(int r, int p, int q) {
     pivots->resize(p);
     MPI_Recv(&*pivots->begin(), p-1, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD, &ms);
     (*pivots)[p-1] = buffer.back() + 1;
+
 
     // Do local bucketing & Distribute local buckets
     std::vector<MPI_Request> requests(p);
@@ -172,6 +174,7 @@ dsort_slave(int r, int p, int q) {
         if (i != r) {
             std::vector<data_t> buff;
             MPI_receive_data_t_array(buff, i);
+            dprintf("Processor: %d, buff size: %u", i, buff.size());
             toMerge.insert(toMerge.end(), buff.begin(), buff.end());
         } else {
             toMerge.insert(toMerge.end(), f, l);
@@ -212,6 +215,7 @@ dsort_master(vector<data_t> &A, int p, int q) {
 
         // Send array from A[from] to A[upto] (both inclusive)
         MPI_send_data_t_array(count, (buff + from), i);
+        dprintf("Keys sent to Process %d\n", i);
 
         // printf("Sent %d elements from %d to %d to processor %d\n", count, from, upto, i);
         cur += share;
@@ -222,10 +226,11 @@ dsort_master(vector<data_t> &A, int p, int q) {
    
    // Compute global pivots
     std::vector<data_t> *global_pivots = pivot_selection_master(n, &(*A.begin()), p, q);
-
+    
+    dprintf("Sending global pivots%s\n","");
     // Send global pivots
     send_global_pivots(global_pivots, p);
-
+    dprintf("Sent global pivots%s\n","");
     // Final collection
 }
 

@@ -11,4 +11,4 @@
 #$ -m be
 #$ -l h_rt=01:00:00
 
-ibrun ./distributed_sort-mpi
+ibrun ./distributed_sort-mpi < test.in
