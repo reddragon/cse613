@@ -207,6 +207,7 @@ dsort_slave(int r, int p, int q) {
 
 void
 dsort_master(vector<data_t> &A, int p, int q) {
+    dprintf("dsort_master(A.size(): %d, p: %d, q: %d)\n", A.size(), p, q);
     // Distribute work
     // Trying to distribute as evenly as possible.
     int n = A.size();
