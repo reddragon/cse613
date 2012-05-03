@@ -93,7 +93,7 @@ vector<data_t>*
 pivot_selection_master(int n, data_t *A, int p, int q) {
     dprintf("pivot_selection_master(n: %d, A: %p, p: %d, q: %d)\n", n, A, p, q);
     MPI_Status ms;
-    int ret;
+    int code;
     // The place to put together all pivots
     std::vector<data_t>* pivots = new std::vector<data_t>;
     
@@ -108,8 +108,8 @@ pivot_selection_master(int n, data_t *A, int p, int q) {
         data_t* B = &*(sp.begin());
 
         // Fetch the pivots from the slave
-        ret = MPI_Recv(B, q-1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &ms);
-        assert(ret == MPI_SUCCESS);
+        code = MPI_Recv(B, q-1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &ms);
+        assert(code == MPI_SUCCESS);
         // Append to the pivots received so far
         pivots->insert(pivots->end(), sp.begin(), sp.end());
     }
