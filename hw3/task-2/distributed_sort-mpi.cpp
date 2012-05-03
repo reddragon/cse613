@@ -248,6 +248,13 @@ main(int argc, char** argv) {
     
     // FIXME: This NEEDS to be tuned.
     q = 4;
+    RANK = myrank;
+
+    if (myrank < 0) {
+        // error
+        fprintf(stderr, "There was an error. RANK: %d\n", RANK);
+        return 1;
+    }
 
     if (myrank == 0) {
         // Master Process
