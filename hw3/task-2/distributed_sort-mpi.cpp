@@ -38,7 +38,7 @@ sample_input(I1 s1, I1 e1, I2 s2, I2 e2) {
 
 int
 MPI_send_data_t_array(long long int n, data_t *buff, int rank) {
-    dprintf("n: %d, buff: %p\n", n, buff);
+    dprintf("MPI_send_data_t_array(n: %d, buff: %p)\n", n, buff);
     int ret;
     ret = MPI_Send(&n, 1, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD);
 
@@ -49,13 +49,19 @@ MPI_send_data_t_array(long long int n, data_t *buff, int rank) {
 
 MPI_Status
 MPI_receive_data_t_array(vector<data_t> &buff, int rank) {
+    dprintf("MPI_receive_data_t_array(buff.size(): %d)\n", buff.size());
     long long int count;
     MPI_Status ms;
-    MPI_Recv(&count, 1, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD, &ms);
-    
+    int ret;
+    ret = MPI_Recv(&count, 1, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD, &ms);
+    assert(ret == MPI_SUCCESS);
+
+    dprintf("MPI_receive_data_t_array::count: %d\n", count);
+
     buff.resize(count);
     data_t* A = &*buff.begin();
-    MPI_Recv(A, count, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD, &ms);
+    ret = MPI_Recv(A, count, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD, &ms);
+    assert(ret == MPI_SUCCESS);
     return ms;
 }
 
@@ -85,7 +91,9 @@ pivot_selection_slave(size_t l, data_t *A, int npivots) {
 
 vector<data_t>*
 pivot_selection_master(int n, data_t *A, int p, int q) {
+    dprintf("pivot_selection_master(n: %d, A: %p, p: %d, q: %d)\n", n, A, p, q);
     MPI_Status ms;
+    int ret;
     // The place to put together all pivots
     std::vector<data_t>* pivots = new std::vector<data_t>;
     
@@ -100,7 +108,8 @@ pivot_selection_master(int n, data_t *A, int p, int q) {
         data_t* B = &*(sp.begin());
 
         // Fetch the pivots from the slave
-        MPI_Recv(B, q-1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &ms);
+        ret = MPI_Recv(B, q-1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &ms);
+        assert(ret == MPI_SUCCESS);
         // Append to the pivots received so far
         pivots->insert(pivots->end(), sp.begin(), sp.end());
     }
@@ -122,8 +131,9 @@ pivot_selection_master(int n, data_t *A, int p, int q) {
 
 void
 send_global_pivots(vector<data_t> *global_pivots, int p) {
+    dprintf("send_global_pivots(global_pivots->size(): %d, p: %d\n", global_pivots->size(), p);
     for (int i = 1; i < p; i++) {
-        MPI_send_data_t_array(p-1, &(*global_pivots->begin()), i);   
+        MPI_send_data_t_array(p-1, &(*global_pivots->begin()), i);
     }
 }
 
