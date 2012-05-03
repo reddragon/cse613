@@ -226,7 +226,7 @@ dsort_master(vector<data_t> &A, int p, int q) {
 
         // Send array from A[from] to A[upto] (both inclusive)
         MPI_send_data_t_array(count, (buff + from), i);
-        dprintf("Keys sent to Process %d\n", i);
+        dprintf("%d keys sent to Process %d\n", i, count);
 
         // printf("Sent %d elements from %d to %d to processor %d\n", count, from, upto, i);
         cur += share;
@@ -252,11 +252,12 @@ main(int argc, char** argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &p);
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
     
-    dprintf("Number of processes: %d\n", p);
 
     // FIXME: This NEEDS to be tuned.
     q = 4;
     RANK = myrank;
+    
+    dprintf("Number of processes: %d\n", p);
     
     if (myrank < 0) {
         // error
