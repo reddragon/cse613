@@ -251,10 +251,12 @@ main(int argc, char** argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &p);
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
     
+    dprintf("Number of processes: %d\n", p);
+
     // FIXME: This NEEDS to be tuned.
     q = 4;
     RANK = myrank;
-
+    
     if (myrank < 0) {
         // error
         fprintf(stderr, "There was an error. RANK: %d\n", RANK);
