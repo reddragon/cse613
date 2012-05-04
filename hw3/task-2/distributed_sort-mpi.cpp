@@ -174,7 +174,7 @@ collect_buckets(std::vector<data_t>* f, int p) {
 
 std::vector<data_t>*
 local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivots) {
-    dprintf("Starting with local bucketing\n", "");
+    dprintf("Starting with local bucketing(r:%d, p:%d, A:%p, buff_sz:%d, pivots:%p)\n", r, p, A, buff_sz, pivots);
     // Do local bucketing & Distribute local buckets
     std::vector<MPI_Request> requests(p);
     std::vector<MPI_Request> creqs(p);
@@ -219,7 +219,7 @@ local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivot
 
     MPI_Waitall(requests.size(), &*requests.begin(), &*statuses.begin());
 
-    dprintf("Done with local bucketing\n", "");
+    dprintf("Done with local bucketing(r:%d, p:%d, A:%p, buff_sz:%d, pivots:%p, toMerge->size():%u)\n", r, p, A, buff_sz, pivots, toMerge->size());
     MPI_Waitall(creqs.size(), &creqs[0], &statuses[0]);
     return toMerge;
 }
