@@ -127,8 +127,8 @@ pivot_selection_master(int n, data_t *A, int p, int q) {
 
         // Fetch the pivots from the slave
         // code = MPI_Recv(B, q-1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &ms);
-        code = MPI_receive_data_t_array(sp, i);
-        assert(code == MPI_SUCCESS);
+        MPI_receive_data_t_array(sp, i);
+        // assert(code == MPI_SUCCESS);
         // Append to the pivots received so far
         pivots.insert(pivots.end(), sp.begin(), sp.end());
     }
