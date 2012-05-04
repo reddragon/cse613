@@ -96,13 +96,12 @@ pivot_selection_slave(size_t l, data_t *A, int npivots) {
     assert(is_sorted(A, A + l));
 
     std::vector<data_t> *ret = new std::vector<data_t>;
-    int jmp = l/npivots;
+    int jmp = l/(npivots + 1);
 
     jmp = jmp < 1 ? 1 : jmp;
     for (int i = 0; i < l; i += jmp) {
         ret->push_back(A[i]);
     }
-
     return ret;
 }
 
