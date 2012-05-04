@@ -182,7 +182,7 @@ local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivot
 
     data_t *start = A, *f = NULL, *l = NULL;
     for (int i = 0; i < p; ++i) {
-        dprintf("start: %lld, pivots[%d]: %lld\n", *start, (*pivots)[i]);
+        dprintf("start: %lld, pivots[%d]: %lld\n", *start, i, (*pivots)[i]);
         data_t *pos = std::lower_bound(start, A + buff_sz, (*pivots)[i]);
         if (i == r) {
             f = start;
