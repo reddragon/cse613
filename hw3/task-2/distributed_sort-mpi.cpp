@@ -174,7 +174,7 @@ collect_buckets(std::vector<data_t>* f, int p) {
 
 std::vector<data_t>*
 local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivots) {
-    
+    dprintf("Starting with local bucketing\n", "");
     // Do local bucketing & Distribute local buckets
     std::vector<MPI_Request> requests(p);
     std::vector<MPI_Request> creqs(p);
@@ -202,7 +202,7 @@ local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivot
         if (i != r) {
             std::vector<data_t> buff;
             MPI_receive_data_t_array(buff, i);
-            dprintf("Processor: %d, buff size: %u", i, buff.size());
+            dprintf("Processor: %d, buff size: %u\n", i, buff.size());
             toMerge->insert(toMerge->end(), buff.begin(), buff.end());
         } else {
             toMerge->insert(toMerge->end(), f, l);
@@ -215,8 +215,9 @@ local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivot
     // Wait for all senders to have completed.
     vector<MPI_Status> statuses(p);
     MPI_Waitall(requests.size(), &*requests.begin(), &*statuses.begin());
+    
+    dprintf("Done with local bucketing\n", "");
     MPI_Waitall(creqs.size(), &creqs[0], &statuses[0]);
-
     return toMerge;
 }
 
@@ -308,9 +309,7 @@ dsort_master(vector<data_t> &A, int p, int q) {
     std::vector<data_t>* ret;
     // ret = new std::vector<data_t>;
     // ret->push_back(1);
-    dprintf("Doing local bucketing\n", "");
     ret = local_bucketing(0, p, &(*A.begin()), (int)(share), global_pivots);   
-    dprintf("Done with local bucketing\n", "");
 
     dprintf("Receiving final buckets from all\n", "");
     collect_buckets(ret, p);
