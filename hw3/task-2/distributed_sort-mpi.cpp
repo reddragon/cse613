@@ -160,9 +160,21 @@ send_global_pivots(vector<data_t> *global_pivots, int p) {
     }
 }
 
+void
+collect_buckets(std::vector<data_t>* f, int p) {
+    std::vector<data_t>* temp = new std::vector<data_t>;
+    for (int i = 1; i < p; i++) {
+        temp->clear();
+        MPI_receive_data_t_array(*temp, i);
+        dprintf("Received process %d's bucked\n", i);
+        f->insert(f->end(), temp->begin(), temp->end());
+    }
+}
+
 
 std::vector<data_t>*
 local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivots) {
+    
     // Do local bucketing & Distribute local buckets
     std::vector<MPI_Request> requests(p);
     data_t *start = A, *f = NULL, *l = NULL;
@@ -232,11 +244,14 @@ dsort_slave(int r, int p, int q) {
     (*pivots)[p-1] = buffer.back() + 1;
 
     std::vector<data_t>* ret;
+    // ret = new std::vector<data_t>;
+    // ret->push_back(1);
+    
     ret = local_bucketing(r, p, A, (int)(buffer.size()), pivots);   
-
+    
     // Now, send out the sorted data to the master process.
     MPI_send_data_t_array(ret->size(), &(*(ret->begin())), 0);
-
+    
     // We need not delete pivots since it will be collected on process exit.
     // delete pivots;
 }
@@ -248,15 +263,16 @@ dsort_master(vector<data_t> &A, int p, int q) {
     // Trying to distribute as evenly as possible.
     int n = A.size();
     double share = n * 1.0 / p, cur = 0;
+    cur = (int)share;
     MPI_Status ms;
     // Number of keys with each of the p processes
     // Doing this to avoid having to receive the count again
-    vector<size_t> keys_with(p);
+   vector<size_t> keys_with(p);
 
     for (int i = 1; i < p; i++) {
         // The first (int)share keys will be sorted by
         // the master
-        int from = (int)share, upto = (i == p-1 ? n - 1 : (int)(cur + share - 1));
+        int from = (int)cur, upto = (i == p-1 ? n - 1 : (int)(cur + share - 1));
         long long int count = upto - from + 1;
         keys_with[i] = count;
 
@@ -282,10 +298,17 @@ dsort_master(vector<data_t> &A, int p, int q) {
     dprintf("Sent global pivots%s\n","");
     // Final collection
 
+    
     std::vector<data_t>* ret;
+    // ret = new std::vector<data_t>;
+    // ret->push_back(1);
+    dprintf("Doing local bucketing\n", "");
     ret = local_bucketing(0, p, &(*A.begin()), (int)(share), global_pivots);   
+    dprintf("Done with local bucketing\n", "");
 
-
+    dprintf("Receiving final buckets from all\n", "");
+    collect_buckets(ret, p);
+    dprintf("Received buckets from all\n", "");
 }
 
 int 
