@@ -159,6 +159,7 @@ send_global_pivots(vector<data_t> *global_pivots, int p) {
 
 void
 dsort_slave(int r, int p, int q) {
+    dprintf("dsort_slave(r: %d, p: %d, q: %d)\n", r, p, q);
     MPI_Status ms;
     vector<data_t> buffer;
 
@@ -169,8 +170,10 @@ dsort_slave(int r, int p, int q) {
 
     // Do pivot_selection
     vector<data_t>* pivots = pivot_selection_slave(buffer.size(), A, q-1);
-    // Post-Condition: A is not sorted!
-    dprintf("pivots: %p\n", pivots);
+
+    // Post-Condition: A is now sorted!
+    dprintf("pivots (pointer): %p\n", pivots);
+    assert(is_sorted(A, A+buffer.size()));
     
     // Send pivots across to master
     MPI_Send((void*)(&*pivots->begin()), pivots->size(), MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD);
