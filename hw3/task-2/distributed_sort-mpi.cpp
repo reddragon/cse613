@@ -138,7 +138,7 @@ pivot_selection_master(int share, data_t *A, int p, int q) {
     assert(is_sorted(pivots.begin(), pivots.end()));
 
     std::vector<data_t> *ret = new std::vector<data_t>;
-    int jmp = l/(p-1);
+    int jmp = l/p;
 
     jmp = jmp < 1 ? 1 : jmp;
     for (int i = jmp; i < l; i += jmp) {
