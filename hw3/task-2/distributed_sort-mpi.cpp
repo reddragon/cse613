@@ -183,13 +183,13 @@ local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivot
     data_t *start = A, *f = NULL, *l = NULL;
     for (int i = 0; i < p; ++i) {
         data_t *pos = std::lower_bound(A, A + buff_sz, (*pivots)[i]);
-        if (p == r) {
+        if (i == r) {
             f = start;
             l = pos;
         } else {
             long long int count = pos-start;
             counts[i] = count;
-            dprintf("Sending count: %d\n", count);
+            dprintf("Sending to %d count: %d\n", i, count);
             MPI_Isend(&counts[i], 1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &creqs[i]);
             MPI_Isend(start, (pos - start), MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &requests[i]);
         }
@@ -272,16 +272,12 @@ dsort_master(vector<data_t> &A, int p, int q) {
     double share = n * 1.0 / p, cur = 0;
     cur = (int)share;
     MPI_Status ms;
-    // Number of keys with each of the p processes
-    // Doing this to avoid having to receive the count again
-   vector<size_t> keys_with(p);
 
     for (int i = 1; i < p; i++) {
         // The first (int)share keys will be sorted by
         // the master
         int from = (int)cur, upto = (i == p-1 ? n - 1 : (int)(cur + share - 1));
         long long int count = upto - from + 1;
-        keys_with[i] = count;
 
         data_t *buff = &*A.begin();
 
@@ -293,9 +289,6 @@ dsort_master(vector<data_t> &A, int p, int q) {
         cur += share;
     }
 
-    // Number of pivots that I will have
-    keys_with[0] = (size_t)share;
-   
     // Compute global pivots
     std::vector<data_t> *global_pivots = pivot_selection_master(n, &(*A.begin()), p, q);
 
