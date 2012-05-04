@@ -162,6 +162,7 @@ send_global_pivots(vector<data_t> *global_pivots, int p) {
 void
 collect_buckets(std::vector<data_t>* f, int p) {
     std::vector<data_t>* temp = new std::vector<data_t>;
+    dprintf("collect_buckets::current bucket size: %d\n", f->size());
     for (int i = 1; i < p; i++) {
         MPI_receive_data_t_array(*temp, i);
         dprintf("Received process %d's bucket of size: %d\n", i, temp->size());
