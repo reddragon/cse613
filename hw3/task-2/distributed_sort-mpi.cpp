@@ -187,6 +187,7 @@ local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivot
         if (i == r) {
             f = start;
             l = pos;
+            dprintf("Sending to %d count: %d\n", i, count);
         } else {
             long long int count = pos-start;
             counts[i] = count;
