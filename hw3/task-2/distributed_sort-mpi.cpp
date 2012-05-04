@@ -182,13 +182,14 @@ local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivot
 
     data_t *start = A, *f = NULL, *l = NULL;
     for (int i = 0; i < p; ++i) {
-        data_t *pos = std::lower_bound(A, A + buff_sz, (*pivots)[0]);
+        data_t *pos = std::lower_bound(A, A + buff_sz, (*pivots)[i]);
         if (p == r) {
             f = start;
             l = pos;
         } else {
             long long int count = pos-start;
             counts[i] = count;
+            dprintf("Sending count: %d\n", count);
             MPI_Isend(&counts[i], 1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &creqs[i]);
             MPI_Isend(start, (pos - start), MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &requests[i]);
         }
