@@ -214,8 +214,11 @@ local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivot
 
     // Wait for all senders to have completed.
     vector<MPI_Status> statuses(p);
+    requests.erase(requests.begin() + p);
+    creqs.erase(creqs.begin() + p);
+
     MPI_Waitall(requests.size(), &*requests.begin(), &*statuses.begin());
-    
+
     dprintf("Done with local bucketing\n", "");
     MPI_Waitall(creqs.size(), &creqs[0], &statuses[0]);
     return toMerge;
