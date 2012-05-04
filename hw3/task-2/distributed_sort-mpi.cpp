@@ -178,7 +178,7 @@ dsort_slave(int r, int p, int q) {
     // Send pivots across to master
     MPI_Send((void*)(&*pivots->begin()), pivots->size(), MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD);
 
-    // Receive global pivots from master
+    // Receive (p-1) global pivots from master
     pivots->resize(p);
     MPI_Recv(&*pivots->begin(), p-1, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD, &ms);
     (*pivots)[p-1] = buffer.back() + 1;
