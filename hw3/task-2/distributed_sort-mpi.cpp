@@ -166,7 +166,7 @@ collect_buckets(std::vector<data_t>* f, int p) {
     for (int i = 1; i < p; i++) {
         temp->clear();
         MPI_receive_data_t_array(*temp, i);
-        dprintf("Received process %d's bucked\n", i);
+        dprintf("Received process %d's bucket\n", i);
         f->insert(f->end(), temp->begin(), temp->end());
     }
 }
