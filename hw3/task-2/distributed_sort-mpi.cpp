@@ -304,6 +304,7 @@ main(int argc, char** argv) {
             scanf("%lld", &a[i]);
         }
 
+        dprintf("Read in %d records from input file", n);
         Timer t;
         t.start();
         if (p == 1) {
