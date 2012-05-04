@@ -178,7 +178,8 @@ local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivot
     std::vector<MPI_Request> requests(p);
     std::vector<MPI_Request> creqs(p);
     std::vector<data_t> counts(p);
-
+    
+    dprintf("-----------------Chunk Size: %d-------------\n", buff_sz);
     data_t *start = A, *f = NULL, *l = NULL;
     for (int i = 0; i < p; ++i) {
         dprintf("start: %lld, pivots[%d]: %lld\n", *start, i, (*pivots)[i]);
@@ -311,7 +312,7 @@ dsort_master(vector<data_t> &A, int p, int q) {
     collect_buckets(ret, p);
     dprintf("Received buckets from all, ret->size(): %u\n", ret->size());
     for (int i = 0; i < (int)(ret->size()); i++) {
-        dprintf("ret[%d]: %d\n", i, *(ret->begin() + i));
+        // dprintf("ret[%d]: %d\n", i, *(ret->begin() + i));
     }
 }
 
