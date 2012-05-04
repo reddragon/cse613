@@ -115,8 +115,8 @@ pivot_selection_master(int n, data_t *A, int p, int q) {
 
     // Sort the pivots received so far
     int l = (int)(pivots->size());
-    parallel_randomized_looping_quicksort_CPP(&(*pivots->begin()), (size_t)0, (size_t)(l-1));
-    
+    parallel_randomized_looping_quicksort_CPP(&((*pivots)[0]), 0, pivots->size() - 1);
+
     std::vector<data_t> *ret = new std::vector<data_t>;
     int jmp = l/(p-1);
 
