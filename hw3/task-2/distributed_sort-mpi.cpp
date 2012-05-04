@@ -177,6 +177,9 @@ local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivot
     
     // Do local bucketing & Distribute local buckets
     std::vector<MPI_Request> requests(p);
+    std::vector<MPI_Request> creqs(p);
+    std::vector<data_t> counts(p);
+
     data_t *start = A, *f = NULL, *l = NULL;
     for (int i = 0; i < p; ++i) {
         data_t *pos = std::lower_bound(A, A + buff_sz, (*pivots)[0]);
@@ -185,7 +188,8 @@ local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivot
             l = pos;
         } else {
             long long int count = pos-start;
-            MPI_Send(&count, 1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD);
+            counts[i] = count;
+            MPI_Isend(&counts[i], 1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &creqs[i]);
             MPI_Isend(start, (pos - start), MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &requests[i]);
         }
         start = pos;
@@ -210,7 +214,8 @@ local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivot
     // Wait for all senders to have completed.
     vector<MPI_Status> statuses(p);
     MPI_Waitall(requests.size(), &*requests.begin(), &*statuses.begin());
-    
+    MPI_Waitall(creqs.size(), &creqs[0], &statuses[0]);
+
     return toMerge;
 }
 
