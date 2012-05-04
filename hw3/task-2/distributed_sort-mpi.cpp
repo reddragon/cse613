@@ -160,6 +160,48 @@ send_global_pivots(vector<data_t> *global_pivots, int p) {
     }
 }
 
+
+std::vector<data_t>*
+local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivots) {
+    // Do local bucketing & Distribute local buckets
+    std::vector<MPI_Request> requests(p);
+    data_t *start = A, *f = NULL, *l = NULL;
+    for (int i = 0; i < p; ++i) {
+        data_t *pos = std::lower_bound(A, A + buff_sz, (*pivots)[0]);
+        if (p == r) {
+            f = start;
+            l = pos;
+        } else {
+            long long int count = pos-start;
+            MPI_Send(&count, 1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD);
+            MPI_Isend(start, (pos - start), MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &requests[i]);
+        }
+        start = pos;
+    }
+
+    // Receive keys from p-1 different processes.
+    std::vector<data_t>* toMerge = new std::vector<data_t>;
+    for (int i = 0; i < p; ++i) {
+        if (i != r) {
+            std::vector<data_t> buff;
+            MPI_receive_data_t_array(buff, i);
+            dprintf("Processor: %d, buff size: %u", i, buff.size());
+            toMerge->insert(toMerge->end(), buff.begin(), buff.end());
+        } else {
+            toMerge->insert(toMerge->end(), f, l);
+        }
+    }
+
+    // Sort all the data using parallel shared memory sorting routine.
+    parallel_randomized_looping_quicksort_CPP(&*toMerge->begin(), 0, toMerge->size() - 1);
+
+    // Wait for all senders to have completed.
+    vector<MPI_Status> statuses(p);
+    MPI_Waitall(requests.size(), &*requests.begin(), &*statuses.begin());
+    
+    return toMerge;
+}
+
 void
 dsort_slave(int r, int p, int q) {
     dprintf("dsort_slave(r: %d, p: %d, q: %d)\n", r, p, q);
@@ -189,45 +231,11 @@ dsort_slave(int r, int p, int q) {
     pivots->resize(p);
     (*pivots)[p-1] = buffer.back() + 1;
 
-    // Do local bucketing & Distribute local buckets
-    std::vector<MPI_Request> requests(p);
-    data_t *f = NULL, *l = NULL;
-    data_t *start = A;
-    for (int i = 0; i < p; ++i) {
-        data_t *pos = std::lower_bound(A, A + buffer.size(), (*pivots)[0]);
-        if (p == r) {
-            f = start;
-            l = pos;
-        } else {
-            long long int count = pos-start;
-            MPI_Send(&count, 1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD);
-            MPI_Isend(start, (pos - start), MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &requests[i]);
-        }
-        start = pos;
-    }
-
-    // Receive keys from p-1 different processes.
-    std::vector<data_t> toMerge;
-    for (int i = 0; i < p; ++i) {
-        if (i != r) {
-            std::vector<data_t> buff;
-            MPI_receive_data_t_array(buff, i);
-            dprintf("Processor: %d, buff size: %u", i, buff.size());
-            toMerge.insert(toMerge.end(), buff.begin(), buff.end());
-        } else {
-            toMerge.insert(toMerge.end(), f, l);
-        }
-    }
-
-    // Sort all the data using parallel shared memory sorting routine.
-    parallel_randomized_looping_quicksort_CPP(&*toMerge.begin(), 0, toMerge.size() - 1);
-
-    // Wait for all senders to have completed.
-    vector<MPI_Status> statuses(p);
-    MPI_Waitall(requests.size(), &*requests.begin(), &*statuses.begin());
+    std::vector<data_t>* ret;
+    ret = local_bucketing(r, p, A, (int)(buffer.size()), pivots);   
 
     // Now, send out the sorted data to the master process.
-    MPI_send_data_t_array(toMerge.size(), &*toMerge.begin(), 0);
+    MPI_send_data_t_array(ret->size(), &(*(ret->begin())), 0);
 
     // We need not delete pivots since it will be collected on process exit.
     // delete pivots;
@@ -265,7 +273,7 @@ dsort_master(vector<data_t> &A, int p, int q) {
     // Number of pivots that I will have
     keys_with[0] = (size_t)share;
    
-   // Compute global pivots
+    // Compute global pivots
     std::vector<data_t> *global_pivots = pivot_selection_master(n, &(*A.begin()), p, q);
     
     dprintf("Sending global pivots%s\n","");
@@ -273,6 +281,11 @@ dsort_master(vector<data_t> &A, int p, int q) {
     send_global_pivots(global_pivots, p);
     dprintf("Sent global pivots%s\n","");
     // Final collection
+
+    std::vector<data_t>* ret;
+    ret = local_bucketing(0, p, &(*A.begin()), (int)(share), global_pivots);   
+
+
 }
 
 int 
