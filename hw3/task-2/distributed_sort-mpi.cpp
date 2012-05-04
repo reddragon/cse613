@@ -126,7 +126,8 @@ pivot_selection_master(int n, data_t *A, int p, int q) {
         data_t* B = &(sp[0]);
 
         // Fetch the pivots from the slave
-        code = MPI_Recv(B, q-1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &ms);
+        // code = MPI_Recv(B, q-1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &ms);
+        code = MPI_receive_data_t_array(sp, i);
         assert(code == MPI_SUCCESS);
         // Append to the pivots received so far
         pivots.insert(pivots.end(), sp.begin(), sp.end());
@@ -178,13 +179,15 @@ dsort_slave(int r, int p, int q) {
     assert(is_sorted(A, A+buffer.size()));
     
     // Send pivots across to master
-    MPI_Send((void*)(&*pivots->begin()), pivots->size(), MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD);
+    MPI_send_data_t_array(pivots->size(), &*pivots->begin(), 0);
+    // MPI_Send((void*)(&*pivots->begin()), pivots->size(), MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD);
 
     // Receive (p-1) global pivots from master
+    // pivots->resize(p);
+    // MPI_Recv(&*pivots->begin(), p-1, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD, &ms);
+    MPI_receive_data_t_array(*pivots, 0);
     pivots->resize(p);
-    MPI_Recv(&*pivots->begin(), p-1, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD, &ms);
     (*pivots)[p-1] = buffer.back() + 1;
-
 
     // Do local bucketing & Distribute local buckets
     std::vector<MPI_Request> requests(p);
