@@ -21,6 +21,20 @@ int RANK = -1;
 
 #define dprintf(FMT,ARGS...) fprintf(stderr, "%d::" FMT, RANK, ARGS);
 
+template <typename Iter>
+bool
+is_sorted(Iter f, Iter l) {
+    Iter next = f;
+    while (f != l) {
+        ++next;
+        if (next != l && *f > *next) {
+            return false;
+        }
+        f = next;
+    }
+    return true;
+}
+
 template <typename I1, typename I2>
 void
 sample_input(I1 s1, I1 e1, I2 s2, I2 e2) {
@@ -67,7 +81,7 @@ MPI_receive_data_t_array(vector<data_t> &buff, int rank) {
 
 vector<data_t>*
 pivot_selection_slave(size_t l, data_t *A, int npivots) {
-
+    dprintf("pivot_selection_slave(l: %d, A: %p, npivots: %d)\n", l, A, npivots);
     /*
     size_t rsz = 12 * log(l);
     rsz = rsz >= l ? l : rsz;
@@ -77,6 +91,7 @@ pivot_selection_slave(size_t l, data_t *A, int npivots) {
 
     // Use Shared-Memory Sort
     parallel_randomized_looping_quicksort_CPP(A, 0, l-1);
+    assert(is_sorted(A, A + l));
 
     std::vector<data_t> *ret = new std::vector<data_t>;
     int jmp = l/npivots;
@@ -118,6 +133,7 @@ pivot_selection_master(int n, data_t *A, int p, int q) {
     // Sort the pivots received so far
     int l = (int)(pivots.size());
     parallel_randomized_looping_quicksort_CPP(&(pivots[0]), 0, pivots.size() - 1);
+    assert(is_sorted(pivots.begin(), pivots.end()));
 
     std::vector<data_t> *ret = new std::vector<data_t>;
     int jmp = l/(p-1);
