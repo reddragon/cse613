@@ -214,8 +214,8 @@ local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivot
 
     // Wait for all senders to have completed.
     vector<MPI_Status> statuses(p);
-    requests.erase(requests.begin() + p);
-    creqs.erase(creqs.begin() + p);
+    requests.erase(requests.begin() + r);
+    creqs.erase(creqs.begin() + r);
 
     MPI_Waitall(requests.size(), &*requests.begin(), &*statuses.begin());
 
