@@ -55,9 +55,11 @@ MPI_send_data_t_array(long long int n, data_t *buff, int rank) {
     dprintf("MPI_send_data_t_array(n: %d, buff: %p)\n", n, buff);
     int ret;
     ret = MPI_Send(&n, 1, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD);
+    assert(ret == MPI_SUCCESS);
 
     // Send buffer
     ret = MPI_Send((void*)(buff), n, MPI_LONG_LONG_INT, rank, 0, MPI_COMM_WORLD);
+    assert(ret == MPI_SUCCESS);
     return ret;
 }
 
