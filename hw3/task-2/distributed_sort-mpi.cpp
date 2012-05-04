@@ -142,7 +142,7 @@ pivot_selection_master(int share, data_t *A, int p, int q) {
     int jmp = l/(p-1);
 
     jmp = jmp < 1 ? 1 : jmp;
-    for (int i = 0; i < l; i += jmp) {
+    for (int i = jmp; i < l; i += jmp) {
         ret->push_back(pivots[i]);
     }
 
@@ -272,7 +272,7 @@ dsort_master(vector<data_t> &A, int p, int q) {
     dprintf("dsort_master(A.size(): %d, p: %d, q: %d)\n", A.size(), p, q);
     // Distribute work
     // Trying to distribute as evenly as possible.
-    int n = A.size();
+    size_t n = A.size();
     double share = n * 1.0 / p, cur = 0;
     cur = (int)share;
     MPI_Status ms;
