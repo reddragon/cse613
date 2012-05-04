@@ -263,9 +263,9 @@ dsort_master(vector<data_t> &A, int p, int q) {
     // Number of pivots that I will have
     keys_with[0] = (size_t)share;
    
-   // Compute global pivots
+    // Compute global pivots
     std::vector<data_t> *global_pivots = pivot_selection_master(n, &(*A.begin()), p, q);
-    
+
     dprintf("Sending global pivots%s\n","");
     // Send global pivots
     send_global_pivots(global_pivots, p);
