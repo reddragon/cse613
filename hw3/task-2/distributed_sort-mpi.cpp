@@ -177,6 +177,9 @@ local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivot
     dprintf("Starting with local bucketing\n", "");
     // Do local bucketing & Distribute local buckets
     std::vector<MPI_Request> requests(p);
+    std::vector<MPI_Request> creqs(p);
+    std::vector<data_t> counts(p);
+
     data_t *start = A, *f = NULL, *l = NULL;
     for (int i = 0; i < p; ++i) {
         data_t *pos = std::lower_bound(A, A + buff_sz, (*pivots)[0]);
@@ -185,7 +188,8 @@ local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivot
             l = pos;
         } else {
             long long int count = pos-start;
-            MPI_Send(&count, 1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD);
+            counts[i] = count;
+            MPI_Isend(&counts[i], 1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &creqs[i]);
             MPI_Isend(start, (pos - start), MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &requests[i]);
         }
         start = pos;
@@ -197,7 +201,7 @@ local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivot
         if (i != r) {
             std::vector<data_t> buff;
             MPI_receive_data_t_array(buff, i);
-            dprintf("Processor: %d, buff size: %u", i, buff.size());
+            dprintf("Processor: %d, buff size: %u\n", i, buff.size());
             toMerge->insert(toMerge->end(), buff.begin(), buff.end());
         } else {
             toMerge->insert(toMerge->end(), f, l);
@@ -212,6 +216,7 @@ local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivot
     MPI_Waitall(requests.size(), &*requests.begin(), &*statuses.begin());
     
     dprintf("Done with local bucketing\n", "");
+    MPI_Waitall(creqs.size(), &creqs[0], &statuses[0]);
     return toMerge;
 }
 
@@ -292,7 +297,7 @@ dsort_master(vector<data_t> &A, int p, int q) {
    
     // Compute global pivots
     std::vector<data_t> *global_pivots = pivot_selection_master(n, &(*A.begin()), p, q);
-    
+
     dprintf("Sending global pivots%s\n","");
     // Send global pivots
     send_global_pivots(global_pivots, p);
