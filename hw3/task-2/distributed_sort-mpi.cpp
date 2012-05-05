@@ -319,7 +319,7 @@ dsort_master(vector<data_t> &A, int p, int q) {
     // Final collection
 
     global_pivots->resize(p);
-    (*global_pivots)[p-1] = A.back() + 1;
+    (*global_pivots)[p-1] = A[((int)share)-1] + 1;
 
     std::vector<data_t>* ret;
     // ret = new std::vector<data_t>;
