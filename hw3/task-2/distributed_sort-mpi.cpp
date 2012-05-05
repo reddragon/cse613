@@ -173,11 +173,18 @@ collect_buckets(std::vector<data_t>* f, int p) {
 
 std::vector<data_t>*
 local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivots) {
-    if  (buff_sz && !((*pivots)[p-1] > A[buff_sz-1])) {
-        dprintf("FAIL HERE\n", "");
+    dprintf("Starting with local bucketing(r:%d, p:%d, A:%p, buff_sz:%d, pivots:%p)\n", r, p, A, buff_sz, pivots);
+
+    if (pivots->size() != p) {
+        dprintf("pivots->size(): %d\n", pivots->size());
         assert(false);
     }
-    dprintf("Starting with local bucketing(r:%d, p:%d, A:%p, buff_sz:%d, pivots:%p)\n", r, p, A, buff_sz, pivots);
+
+    if  (buff_sz && !((*pivots)[p-1] > A[buff_sz-1])) {
+        dprintf("Last element of pivots is not > last element of A\n", "");
+        assert(false);
+    }
+
     // Do local bucketing & Distribute local buckets
     std::vector<MPI_Request> requests(p);
     std::vector<MPI_Request> creqs(p);
