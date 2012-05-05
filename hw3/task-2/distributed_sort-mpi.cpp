@@ -21,7 +21,11 @@ typedef pair<size_t, size_t> range_t;
 
 int RANK = -1;
 
+#if defined NDEBUG
+#define dprintf(ARGS...)
+#else
 #define dprintf(FMT,ARGS...) fprintf(stderr, "%d::" FMT, RANK, ARGS);
+#endif
 
 template <typename Iter>
 bool
