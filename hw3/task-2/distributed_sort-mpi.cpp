@@ -329,9 +329,7 @@ dsort_master(vector<data_t> &A, int p, int q) {
     dprintf("Receiving final buckets from all\n", "");
     collect_buckets(ret, p);
     dprintf("Received buckets from all, ret->size(): %u\n", ret->size());
-    for (int i = 0; i < (int)(ret->size()); i++) {
-        // dprintf("ret[%d]: %d\n", i, *(ret->begin() + i));
-    }
+    assert(is_sorted(ret->begin(), ret->end()));
 }
 
 int 
