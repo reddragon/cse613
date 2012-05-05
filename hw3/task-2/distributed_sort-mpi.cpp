@@ -23,6 +23,7 @@ int RANK = -1;
 Timer t1, t2;
 double total_no_1_6_sec;
 
+extern size_t base_case = 4096;
 
 // Define PRINT_RESULT to print the sorted numbers
 // #define PRINT_RESULT

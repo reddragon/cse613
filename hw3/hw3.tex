@@ -167,22 +167,22 @@ $O(\frac{n}{p}\log{n}{p})$ time. Therefore, the total time taken for all the pro
 \end{enumerate}
 Therefore, the total computation cost is: $O(p) + O(n\log{\frac{n}{p}}) + O(pq) + O(pq\log{pq}) + O(p\log{\frac{n}{p}}) + O(p^2) + O(n)$.
 
-\subsection{Value of $k$ that gives best running time is: 10}
+\subsection{Value of $k$ that gives best running time is: 4}
 
-The value of $k$ that gives us the best running time is $10$.
+The value of $k$ that gives us the best running time is $4$.
 
 \subsection{Report Running Times}
 
-Running time with all steps included:
+Running time (in second) with all steps included:
 
 \begin{center}
   \begin{tabular}{| l | r | r | r | r | r | r |}
     \hline
     Test Case \# & 01 & 02 & 03 & 04 & 05 & 06  \\ \hline
-    1 Process/node &  &  &  &  &  &  \\ \hline
-    2 Processes/node &  &  &  &  &  &  \\ \hline
-    6 Processes/node &  &  &  &  &  &  \\ \hline
-    12 Processes/node &  &  &  &  &  &  \\ \hline
+    1 Process/node & 3.53 & 26.93 & 238.48 & 241.67 & 324.14 & 391.85 \\ \hline
+    2 Processes/node & 2.63 & 20.86 & 150.53 & 205.04 & 343.98 &  \\ \hline
+    6 Processes/node & 3.43 & 39.14 & 191.56 & 236.99 & 292.40 & 180.42 \\ \hline
+    12 Processes/node & 1.66 & 38.85 & 106.76 & 259.94 & 218.19 & 356.61 \\ \hline
   \end{tabular}
 \end{center}
 
@@ -193,10 +193,10 @@ Running time excluding steps 1 \& 6:
   \begin{tabular}{| l | r | r | r | r | r | r |}
     \hline
     Test Case \# & 01 & 02 & 03 & 04 & 05 & 06  \\ \hline
-    1 Process/node &  &  &  &  &  &  \\ \hline
-    2 Processes/node &  &  &  &  &  &  \\ \hline
-    6 Processes/node &  &  &  &  &  &  \\ \hline
-    12 Processes/node &  &  &  &  &  &  \\ \hline
+    1 Process/node & 3.52 & 16.80 & 238.28 & 177.96 & 323.68 & 390.97 \\ \hline
+    2 Processes/node & 1.61 & 16.05 & 150.00 & 204.51 & 343.65 &  \\ \hline
+    6 Processes/node & 3.42 & 39.07 & 191.03 & 236.55 & 291.59 & 178.83 \\ \hline
+    12 Processes/node & 0.41 & 38.78 & 15.53 & 259.44 & 94.41 & 100.58 \\ \hline
   \end{tabular}
 \end{center}
 

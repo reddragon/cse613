@@ -17,6 +17,6 @@ K=1
 for i in 1 2 4 8 16 32 64 128 256 512
 do
   echo -ne "Running test 6 for k == $i\n" 1>&2
-  TEST_PATH="$HW3/tests/test-06-in.txt"
+  TEST_PATH="$HW3/tests/test-02-in.txt"
   ibrun ./distributed_sort-mpi $TEST_PATH $i > /dev/null
 done
