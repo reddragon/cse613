@@ -21,5 +21,5 @@ for i in 1 2 3 4 5 6
 do
   echo -ne "Running test $i for k == 2\n" 1>&2
   TEST_PATH="$HW3/tests/test-0$i-in.txt"
-  ibrun ./distributed_sort-mpi test.in $K > /dev/null
+  ibrun ./distributed_sort-mpi $TEST_PATH $K > /dev/null
 done
