@@ -367,10 +367,10 @@ dsort_master(vector<data_t> &A, int p, int q) {
     dprintf("Receiving final buckets from all\n", "");
     collect_buckets(ret, p);
     dprintf("Received buckets from all, ret->size(): %u\n", ret->size());
-    assert(is_sorted(ret->begin(), ret->end()));
+    A.swap(*ret);
 }
 
-int 
+int
 main(int argc, char** argv) {
     int p, q, myrank;
     MPI_Init(&argc, &argv);
@@ -420,6 +420,8 @@ main(int argc, char** argv) {
         */
 
         fprintf(stderr, "time(sec): %f\n", total_sec/1000000.0);
+        assert(is_sorted(a.begin(), a.end()));
+
 #else
         data_t* A = new data_t[100];
         for (int i = 0; i < 100; i++) {
