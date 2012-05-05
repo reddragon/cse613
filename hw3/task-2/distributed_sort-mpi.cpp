@@ -391,7 +391,7 @@ main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
     
 
-    q = atoi(argv[2]);
+    q = atoi(argv[2]) * p;
     RANK = myrank;
     
     dprintf("Number of processes: %d\n", p);
