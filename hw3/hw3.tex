@@ -115,22 +115,49 @@ $q \times \frac{n}{pq}$, which is $\frac{n}{p}$ keys to sort.
 
 TODO: Is this right?
 
-\subsection{Value of $k$ that gives best running time is: 10}
+\subsection{Implementation of the Algorithm}
 
-The value of $k$ that gives us the best running time is $10$.
+\subsection{Communication \& Computation Complexities}
+The communication cost can be accounted for, as follows:
+\begin{enumerate}
+\item Initial Distribution: $n$ keys are evenly distributed to processes. So each process
+receives at max $\lceil\frac{n}{p}\rceil$ keys, and the communication cost (for sending to $p$ processes) is
+$p(t_s + t_w\lceil\frac{n}{p}\rceil)$.
+\item Pivot Selection: The master receives $q-1$ local pivots from each of the $p$ processes, 
+and sends $p-1$ global pivots to each of the processes. This costs $p(t_s + t_w(q-1)) + 
+\log{p}(t_s + t_w(p-1))$.
+\item Local Bucketing: This stage has no communication cost.
+\item Distribute Local Buckets: During the Initial Distribution, each process has $\frac{n}{p}$
+keys. In an expected sense, after distribution of local buckets, each process should have 
+the $\frac{n}{p}$ keys as well. But if the keys were randomly distributed, each process would have
+contributed a roughly equal fraction of the keys to the current process' set of keys. Thus, out of
+the final $\frac{n}{p}$ keys, a fraction of $\frac{n}{p^2}$ came from each of the $p-1$ processors,
+and the remaining fraction of $\frac{n}{p^2}$ was with itself. Therefore, the total cost of 
+communication being $(p-1)(t_s + t_w(\frac{n}{p^2}))$ in this step.
+\item Local Sort: This stage has no communication cost.
+\item Final Collection: In an expected sense, the sorted buckets at each process would be of size
+$\frac{n}{p}$, thus the cost of getting these buckets from the processes would be
+$p(t_s + t_w(\frac{n}{p}))$.
+\end{enumerate}
+Therefore, the total cost of communication would be: $p(t_s + t_w\lceil\frac{n}{p}\rceil) + p(t_s + t_w(q-1)) + 
+\log{p}(t_s + t_w(p-1)) + (p-1)(t_s + t_w(\frac{n}{p^2})) + p(t_s + t_w(\frac{n}{p}))$.
+
+\subsection{Value of $k$ that gives best running time is: 4}
+
+The value of $k$ that gives us the best running time is $4$.
 
 \subsection{Report Running Times}
 
-Running time with all steps included:
+Running time (in second) with all steps included:
 
 \begin{center}
   \begin{tabular}{| l | r | r | r | r | r | r |}
     \hline
     Test Case \# & 01 & 02 & 03 & 04 & 05 & 06  \\ \hline
-    1 Process/node &  &  &  &  &  &  \\ \hline
-    2 Processes/node &  &  &  &  &  &  \\ \hline
-    6 Processes/node &  &  &  &  &  &  \\ \hline
-    12 Processes/node &  &  &  &  &  &  \\ \hline
+    1 Process/node & 3.53 & 26.93 & 238.48 & 241.67 & 324.14 & 391.85 \\ \hline
+    2 Processes/node & 2.63 & 20.86 & 150.53 & 205.04 & 343.98 &  \\ \hline
+    6 Processes/node & 3.43 & 39.14 & 191.56 & 236.99 & 292.40 & 180.42 \\ \hline
+    12 Processes/node & 1.66 & 38.85 & 106.76 & 259.94 & 218.19 & 356.61 \\ \hline
   \end{tabular}
 \end{center}
 
@@ -141,10 +168,10 @@ Running time excluding steps 1 \& 6:
   \begin{tabular}{| l | r | r | r | r | r | r |}
     \hline
     Test Case \# & 01 & 02 & 03 & 04 & 05 & 06  \\ \hline
-    1 Process/node &  &  &  &  &  &  \\ \hline
-    2 Processes/node &  &  &  &  &  &  \\ \hline
-    6 Processes/node &  &  &  &  &  &  \\ \hline
-    12 Processes/node &  &  &  &  &  &  \\ \hline
+    1 Process/node & 3.52 & 16.80 & 238.28 & 177.96 & 323.68 & 390.97 \\ \hline
+    2 Processes/node & 1.61 & 16.05 & 150.00 & 204.51 & 343.65 &  \\ \hline
+    6 Processes/node & 3.42 & 39.07 & 191.03 & 236.55 & 291.59 & 178.83 \\ \hline
+    12 Processes/node & 0.41 & 38.78 & 15.53 & 259.44 & 94.41 & 100.58 \\ \hline
   \end{tabular}
 \end{center}
 
