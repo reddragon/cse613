@@ -390,6 +390,10 @@ main(int argc, char** argv) {
         return 1;
     }
 
+    if (argc > 1) {
+        freopen(argv[1], "r", stdin);
+    }
+
     if (myrank == 0) {
         // Master Process
         // Read data
