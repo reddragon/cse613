@@ -376,7 +376,7 @@ dsort_master(vector<data_t> &A, int p, int q) {
 
 int
 main(int argc, char** argv) {
-    assert(argc == 2);
+    assert(argc == 3);
     int p, q, myrank;
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &p);
