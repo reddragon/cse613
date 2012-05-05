@@ -24,6 +24,9 @@ Timer t1, t2;
 double total_no_1_6_sec;
 
 
+// Define PRINT_RESULT to print the sorted numbers
+// #define PRINT_RESULT
+
 #if defined NDEBUG
 #define dprintf(ARGS...)
 #else
@@ -316,29 +319,6 @@ dsort_master(vector<data_t> &A, int p, int q) {
     // Distribute work
     // Trying to distribute as evenly as possible.
     size_t n = A.size();
-#if 0
-    double share = n * 1.0 / p, cur = 0;
-    cur = (int)share;
-
-    for (int i = 1; i < p; i++) {
-        // The first (int)share keys will be sorted by
-        // the master
-        int from = (int)cur, upto = (i == p-1 ? n - 1 : (int)(cur + share - 1));
-        long long int count = upto - from + 1;
-
-        data_t *buff = &*A.begin();
-
-        // Send array from A[from] to A[upto] (both inclusive)
-        MPI_send_data_t_array(count, (buff + from), i);
-        dprintf("%d keys sent to Process %d\n", count, i);
-
-        // printf("Sent %d elements from %d to %d to processor %d\n", count, from, upto, i);
-        cur += share;
-    }
-
-    // Compute global pivots
-    std::vector<data_t> *global_pivots = pivot_selection_master((int)share, &(*A.begin()), p, q);
-#else
     vector<range_t> ranges = split_into_ranges(n, p);
     data_t *buff = &A[0];
 
@@ -355,7 +335,6 @@ dsort_master(vector<data_t> &A, int p, int q) {
     // Compute global pivots
     std::vector<data_t> *global_pivots = 
         pivot_selection_master(ranges[0].second, buff, p, q);
-#endif
 
     dprintf("Sending global pivots%s\n","");
     // Send global pivots
@@ -409,7 +388,6 @@ main(int argc, char** argv) {
     if (myrank == 0) {
         // Master Process
         // Read data
-#if 1
         long long int n;
 
         scanf("%lld", &n);
@@ -430,11 +408,11 @@ main(int argc, char** argv) {
 
         double total_all_steps_sec = t2.stop();
 
-        /*
+#if defined PRINT_RESULT
         for (long long int i = 0; i < n; ++i) {
             printf("%lld\n", a[i]);
         }
-        */
+#endif // PRINT_RESULT
 
         fprintf(stderr, "time including steps 1 & 6 (sec): %f\n", total_all_steps_sec/1000000.0);
 
@@ -442,15 +420,8 @@ main(int argc, char** argv) {
 
         assert(is_sorted(a.begin(), a.end()));
 
-#else
-        data_t* A = new data_t[100];
-        for (int i = 0; i < 100; i++) {
-            A[i] = 100-i;
-        }
-        dsort_master(100, A, p, q);
-#endif 
     } else {
-      dsort_slave(myrank, p, q);
+        dsort_slave(myrank, p, q);
     }
     MPI_Finalize();
 }
