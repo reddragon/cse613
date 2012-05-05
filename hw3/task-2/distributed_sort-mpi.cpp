@@ -436,9 +436,9 @@ main(int argc, char** argv) {
         }
         */
 
-        fprintf(stderr, "time including steps 1 & 6 (sec)  : %f\n", total_all_steps_sec/1000000.0);
+        fprintf(stderr, "time including steps 1 & 6 (sec): %f\n", total_all_steps_sec/1000000.0);
 
-        fprintf(stderr, "time without steps 1 & 6 I/O (sec): %f\n", total_no_1_6_sec/1000000.0);
+        fprintf(stderr, "time without steps 1 & 6 (sec)  : %f\n", total_no_1_6_sec/1000000.0);
 
         assert(is_sorted(a.begin(), a.end()));
 
