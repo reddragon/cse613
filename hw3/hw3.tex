@@ -115,6 +115,33 @@ $q \times \frac{n}{pq}$, which is $\frac{n}{p}$ keys to sort.
 
 TODO: Is this right?
 
+\subsection{Implementation of the Algorithm}
+
+\subsection{Communication \& Computation Complexities}
+The communication cost can be accounted for, as follows:
+\begin{enumerate}
+\item Initial Distribution: $n$ keys are evenly distributed to processes. So each process
+receives at max $\lceil\frac{n}{p}\rceil$ keys, and the communication cost (for sending to $p$ processes) is
+$p(t_s + t_w\lceil\frac{n}{p}\rceil)$.
+\item Pivot Selection: The master receives $q-1$ local pivots from each of the $p$ processes, 
+and sends $p-1$ global pivots to each of the processes. This costs $p(t_s + t_w(q-1)) + 
+\log{p}(t_s + t_w(p-1))$.
+\item Local Bucketing: This stage has no communication cost.
+\item Distribute Local Buckets: During the Initial Distribution, each process has $\frac{n}{p}$
+keys. In an expected sense, after distribution of local buckets, each process should have 
+the $\frac{n}{p}$ keys as well. But if the keys were randomly distributed, each process would have
+contributed a roughly equal fraction of the keys to the current process' set of keys. Thus, out of
+the final $\frac{n}{p}$ keys, a fraction of $\frac{n}{p^2}$ came from each of the $p-1$ processors,
+and the remaining fraction of $\frac{n}{p^2}$ was with itself. Therefore, the total cost of 
+communication being $(p-1)(t_s + t_w(\frac{n}{p^2}))$ in this step.
+\item Local Sort: This stage has no communication cost.
+\item Final Collection: In an expected sense, the sorted buckets at each process would be of size
+$\frac{n}{p}$, thus the cost of getting these buckets from the processes would be
+$p(t_s + t_w(\frac{n}{p}))$.
+\end{enumerate}
+Therefore, the total cost of communication would be: $p(t_s + t_w\lceil\frac{n}{p}\rceil) + p(t_s + t_w(q-1)) + 
+\log{p}(t_s + t_w(p-1)) + (p-1)(t_s + t_w(\frac{n}{p^2})) + p(t_s + t_w(\frac{n}{p}))$.
+
 \subsection{Value of $k$ that gives best running time is: XX}
 
 The value of $k$ that gives us the best running time is $XX$.
