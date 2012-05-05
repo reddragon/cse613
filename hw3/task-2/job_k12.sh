@@ -13,7 +13,7 @@
 
 HW3='/work/01905/rezaul/CSE613/HW3'
 OUT_PATH="$WORK/hw3/task-2/k12"
-K=10
+K=4
 
 mkdir -p $OUT_PATH
 
@@ -21,5 +21,5 @@ for i in 1 2 3 4 5 6
 do
   echo -ne "Running test $i for k == 12\n" 1>&2
   TEST_PATH="$HW3/tests/test-0$i-in.txt"
-  ibrun ./distributed_sort-mpi test.in $K > /dev/null
+  ibrun ./distributed_sort-mpi $TEST_PATH $K > /dev/null
 done
