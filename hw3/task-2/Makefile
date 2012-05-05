@@ -1,9 +1,9 @@
 CXX := g++
 CXXFLAGS  := $(FLAGS) -O2 -Wall
-CILKFLAGS := -lcilk_main -lcilkrts -lcilkutil
+CILKFLAGS := $(FLAGS) -lcilk_main -lcilkrts -lcilkutil
 CILKXX := cilk++
 MPICXX := mpicc
-MPICXXFLAGS := -w1 -O2
+MPICXXFLAGS := $(FLAGS) -w1 -O2
 CILKHOME := ~/cilk
 
 all: libcommon.so distributed_sort-mpi rand
