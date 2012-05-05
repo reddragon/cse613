@@ -20,4 +20,4 @@ sc: c.cpp
 	$(CXX) -o sc.out c.cpp -DPARTE $(CXXFLAGS)
 
 clean:
-	rm -f a.out b.out c.out e.out
+	rm -f a.out b.out c.out e.out sc.out
