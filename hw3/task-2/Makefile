@@ -12,7 +12,7 @@ libcommon.so: ../task-1/common.hpp ../task-1/common.cpp
 	$(CILKXX) -m64 -fPIC -shared -o libcommon.so ../task-1/common.cpp $(CXXFLAGS)
 
 distributed_sort-mpi: distributed_sort-mpi.cpp
-	$(MPICXX) distributed_sort-mpi.cpp -o distributed_sort-mpi -L $(CILKHOME)/lib64 -L. -Wl,-rpath=. -lcommon $(CILKFLAGS) $(CXXFLAGS)
+	$(MPICXX) distributed_sort-mpi.cpp -o distributed_sort-mpi -L $(CILKHOME)/lib64 -L. -Wl,-rpath=. -lcommon $(CILKFLAGS) $(CXXFLAGS) $(MPICXXFLAGS)
 
 rand: rand.cpp
 	$(CXX) $(CXXFLAGS) rand.cpp -o rand
