@@ -144,7 +144,7 @@ pivot_selection_master(int share, data_t *A, int p, int q) {
     for (int i = jmp; i < l; i += jmp) {
         ret->push_back(pivots[i]);
     }
-
+    
     // Cleanup
     delete piv;
 
@@ -173,6 +173,10 @@ collect_buckets(std::vector<data_t>* f, int p) {
 
 std::vector<data_t>*
 local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivots) {
+    if  (buff_sz && !((*pivots)[p-1] > A[buff_sz-1])) {
+        dprintf("FAIL HERE\n", "");
+        assert(false);
+    }
     dprintf("Starting with local bucketing(r:%d, p:%d, A:%p, buff_sz:%d, pivots:%p)\n", r, p, A, buff_sz, pivots);
     // Do local bucketing & Distribute local buckets
     std::vector<MPI_Request> requests(p);
@@ -187,9 +191,13 @@ local_bucketing(int r, int p, data_t* A, int buff_sz, std::vector<data_t>* pivot
         if (i == r) {
             f = start;
             l = pos;
+            // dprintf("Part %d: (%d - %d), length:%d\n", i, f-A, (l-1)-A,l-f);
+            dprintf("-----------------L:%d---------------\n", l-f);
         } else {
             long long int count = pos-start;
             counts[i] = count;
+            // dprintf("Part %d: (%d - %d), length:%d\n", i, (start)-A, (pos-1)-A, count);
+            dprintf("-----------------L:%d---------------\n", count);
             dprintf("Sending to %d count: %d\n", i, count);
             MPI_Isend(&counts[i], 1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &creqs[i]);
             MPI_Isend(start, (pos - start), MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, &requests[i]);
@@ -302,7 +310,9 @@ dsort_master(vector<data_t> &A, int p, int q) {
     dprintf("Sent global pivots%s\n","");
     // Final collection
 
-    
+    global_pivots->resize(p);
+    (*global_pivots)[p-1] = A.back() + 1;
+
     std::vector<data_t>* ret;
     // ret = new std::vector<data_t>;
     // ret->push_back(1);
