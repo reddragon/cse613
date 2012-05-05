@@ -384,14 +384,14 @@ dsort_master(vector<data_t> &A, int p, int q) {
 
 int
 main(int argc, char** argv) {
+    assert(argc == 3);
     int p, q, myrank;
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &p);
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
     
 
-    // FIXME: This NEEDS to be tuned.
-    q = 4;
+    q = atoi(argv[2]);
     RANK = myrank;
     
     dprintf("Number of processes: %d\n", p);
