@@ -3,6 +3,7 @@ CXXFLAGS  := $(FLAGS) -O2 -Wall
 CILKFLAGS := -lcilk_main -lcilkrts -lcilkutil
 CILKXX := cilk++
 MPICXX := mpicc
+MPICXXFLAGS := -Wno-missing-declarations 
 CILKHOME := ~/cilk
 
 all: libcommon.so distributed_sort-mpi rand
