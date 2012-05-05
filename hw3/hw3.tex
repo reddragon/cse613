@@ -142,6 +142,31 @@ $p(t_s + t_w(\frac{n}{p}))$.
 Therefore, the total cost of communication would be: $p(t_s + t_w\lceil\frac{n}{p}\rceil) + p(t_s + t_w(q-1)) + 
 \log{p}(t_s + t_w(p-1)) + (p-1)(t_s + t_w(\frac{n}{p^2})) + p(t_s + t_w(\frac{n}{p}))$.
 
+Now, we can find out the computation complexity as follows:
+\begin{enumerate}
+\item Initial Distribution: $O(p)$ to initiate sending of each
+of the chunks of size $\lceil\frac{n}{p}\rceil$.
+\item Pivot Selection: 
+  \begin{enumerate}
+  \item Local Sorting of chunks of size $\lceil\frac{n}{p}\rceil$ costs: $O(\frac{n}{p}\log{\frac{n}{p}})$. Since there are $p$ chunks, therefore the total cost would be: $O(n\log{\frac{n}{p}})$.
+  \item Selection of Local Pivot \& Sending them to the Master Process: Each process would select $q-1$ pivots and send to the master process, therefore, the total cost would be $O(pq)$.
+  \item Sorting of the Cumulated Local Pivots: There are $p(q-1)$ pivots in all, and hence the sorting of the accumulated local pivots would be $O(pq\log{pq})$.
+  \item Selection \& Broadcasting of Global Pivots: $O(p)$
+  \end{enumerate}
+\item Local Bucketing: Each process tries to insert the $p-1$ 
+global pivots it received from the master into the sorted set of 
+$\frac{n}{p}$ keys that it already has, using Binary Search. 
+This costs $O(p\log{\frac{n}{p}})$.
+\item Distribute Local Buckets: Each process sends $p-1$ of its
+buckets to other processes. Therefore, the total complexity is
+$O(p^2)$.
+\item Local Sort: Each process has about $\frac{n}{p}$ keys
+with itself, and sorting them locally takes 
+$O(\frac{n}{p}\log{n}{p})$ time. Therefore, the total time taken for all the processes is $O(p\log{\frac{n}{p}})$.
+\item Final Collection: Final merging of the buckets is $O(n)$.
+\end{enumerate}
+Therefore, the total computation cost is: $O(p) + O(n\log{\frac{n}{p}}) + O(pq) + O(pq\log{pq}) + O(p\log{\frac{n}{p}}) + O(p^2) + O(n)$.
+
 \subsection{Value of $k$ that gives best running time is: 10}
 
 The value of $k$ that gives us the best running time is $10$.
