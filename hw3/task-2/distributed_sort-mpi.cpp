@@ -20,6 +20,9 @@ typedef long long int data_t;
 typedef pair<size_t, size_t> range_t;
 
 int RANK = -1;
+Timer t1, t2;
+double total_no_1_6_sec;
+
 
 #if defined NDEBUG
 #define dprintf(ARGS...)
@@ -347,6 +350,8 @@ dsort_master(vector<data_t> &A, int p, int q) {
         dprintf("%d keys sent to Process %d\n", r.second - r.first, i);
     }
 
+    t1.start();
+
     // Compute global pivots
     std::vector<data_t> *global_pivots = 
         pivot_selection_master(ranges[0].second, buff, p, q);
@@ -369,6 +374,9 @@ dsort_master(vector<data_t> &A, int p, int q) {
     ret = local_bucketing(0, p, buff, ranges[0].second, global_pivots);
 
     dprintf("Receiving final buckets from all\n", "");
+
+    total_no_1_6_sec = t1.stop();
+
     collect_buckets(ret, p);
     dprintf("Received buckets from all, ret->size(): %u\n", ret->size());
     A.swap(*ret);
@@ -403,6 +411,7 @@ main(int argc, char** argv) {
         // Read data
 #if 1
         long long int n;
+
         scanf("%lld", &n);
         std::vector<data_t> a(n);
         for (long long int i = 0; i < n; ++i) {
@@ -410,8 +419,8 @@ main(int argc, char** argv) {
         }
 
         dprintf("Read in %d records from input file\n", n);
-        Timer t;
-        t.start();
+
+        t2.start();
         if (p == 1) {
             parallel_randomized_looping_quicksort_CPP(&*a.begin(), 0, a.size() - 1);
         } else {
@@ -419,15 +428,18 @@ main(int argc, char** argv) {
             dsort_master(a, p, q);
         }
 
-        double total_sec = t.stop();
-        
+        double total_all_steps_sec = t2.stop();
+
         /*
         for (long long int i = 0; i < n; ++i) {
             printf("%lld\n", a[i]);
         }
         */
 
-        fprintf(stderr, "time(sec): %f\n", total_sec/1000000.0);
+        fprintf(stderr, "time including steps 1 & 6 (sec)  : %f\n", total_all_steps_sec/1000000.0);
+
+        fprintf(stderr, "time without steps 1 & 6 I/O (sec): %f\n", total_no_1_6_sec/1000000.0);
+
         assert(is_sorted(a.begin(), a.end()));
 
 #else
