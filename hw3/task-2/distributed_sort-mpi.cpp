@@ -364,6 +364,8 @@ dsort_master(vector<data_t> &A, int p, int q) {
 int
 main(int argc, char** argv) {
     assert(argc == 3);
+    // 1st argument (argv[1]) is the input file
+    // 2nd argument (argv[2]) is the value 'k'
     int p, q, myrank;
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &p);
