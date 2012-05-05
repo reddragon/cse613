@@ -13,7 +13,7 @@
 
 HW3='/work/01905/rezaul/CSE613/HW3'
 OUT_PATH="$WORK/hw3/task-2/k12"
-K=10
+K=4
 
 mkdir -p $OUT_PATH
 
