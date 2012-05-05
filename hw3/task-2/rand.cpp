@@ -2,8 +2,8 @@
 #include<set>
 #include<iostream>
 
-int main() {
-    int n = 500;
+int main(int argc, char **argv) {
+    int n = atoi(argv[1]);
     std::set<int> s;
     srand(0);
     std::cout << n << std::endl;
