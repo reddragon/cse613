@@ -361,7 +361,8 @@ dsort_master(vector<data_t> &A, int p, int q) {
     std::vector<data_t>* ret;
     // ret = new std::vector<data_t>;
     // ret->push_back(1);
-    ret = local_bucketing(0, p, &(*A.begin()), (int)(share), global_pivots);   
+    // ret = local_bucketing(0, p, &(*A.begin()), (int)(share), global_pivots);
+    ret = local_bucketing(0, p, buff, ranges[0].second, global_pivots);
 
     dprintf("Receiving final buckets from all\n", "");
     collect_buckets(ret, p);
