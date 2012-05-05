@@ -115,6 +115,7 @@ $q \times \frac{n}{pq}$, which is $\frac{n}{p}$ keys to sort.
 
 TODO: Is this right?
 
+<<<<<<< HEAD
 \subsection{Implementation of the Algorithm}
 
 \subsection{Communication \& Computation Complexities}
@@ -142,11 +143,37 @@ $p(t_s + t_w(\frac{n}{p}))$.
 Therefore, the total cost of communication would be: $p(t_s + t_w\lceil\frac{n}{p}\rceil) + p(t_s + t_w(q-1)) + 
 \log{p}(t_s + t_w(p-1)) + (p-1)(t_s + t_w(\frac{n}{p^2})) + p(t_s + t_w(\frac{n}{p}))$.
 
-\subsection{Value of $k$ that gives best running time is: XX}
+\subsection{Value of $k$ that gives best running time is: 10}
 
-The value of $k$ that gives us the best running time is $XX$.
+The value of $k$ that gives us the best running time is $10$.
 
 \subsection{Report Running Times}
 
+Running time with all steps included:
+
+\begin{center}
+  \begin{tabular}{| l | r | r | r | r | r | r |}
+    \hline
+    Test Case \# & 01 & 02 & 03 & 04 & 05 & 06  \\ \hline
+    1 Process/node &  &  &  &  &  &  \\ \hline
+    2 Processes/node &  &  &  &  &  &  \\ \hline
+    6 Processes/node &  &  &  &  &  &  \\ \hline
+    12 Processes/node &  &  &  &  &  &  \\ \hline
+  \end{tabular}
+\end{center}
+
+
+Running time excluding steps 1 \& 6:
+
+\begin{center}
+  \begin{tabular}{| l | r | r | r | r | r | r |}
+    \hline
+    Test Case \# & 01 & 02 & 03 & 04 & 05 & 06  \\ \hline
+    1 Process/node &  &  &  &  &  &  \\ \hline
+    2 Processes/node &  &  &  &  &  &  \\ \hline
+    6 Processes/node &  &  &  &  &  &  \\ \hline
+    12 Processes/node &  &  &  &  &  &  \\ \hline
+  \end{tabular}
+\end{center}
 
 \end{document}
