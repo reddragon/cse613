@@ -254,6 +254,7 @@ dsort_slave(int r, int p, int q) {
     MPI_receive_data_t_array(*pivots, 0);
     pivots->resize(p);
     (*pivots)[p-1] = buffer.back() + 1;
+    assert(is_sorted(pivots->begin(), pivots->end()));
 
     std::vector<data_t>* ret;
     // ret = new std::vector<data_t>;
