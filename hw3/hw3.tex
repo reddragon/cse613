@@ -130,6 +130,8 @@ Hence, proved.
 
 \subsection{Implementation of the Algorithm}
 
+Please refer to the file \texttt{hw3/task-2/distributed\_sort-mpi.cpp}.
+
 \subsection{Communication \& Computation Complexities}
 The communication and computation costs can be accounted for, as
 follows:
@@ -158,40 +160,52 @@ Now, we can find out the computation complexity as follows:
 \begin{enumerate}
 \item Initial Distribution: There is no computational cost at this stage.
 \item Pivot Selection: 
+
   \begin{enumerate}
+
   \item Local Sorting of chunks of size $\lceil\frac{n}{p}\rceil$ costs: $O(\frac{n}{p}\log{\frac{n}{p}})$.   
+
   \item Selection of Local Pivot \& Sending them to the Master 
   Process: Each process would select $q-1$ pivots and send to 
-  the master process, therefore, the total cost would be $O(p^2)$.
+  the master process, therefore, the total cost would be $O(p)$.
+
   \item Sorting of the Accumulated Local Pivots: There are $p(q-1) 
   = O(p^2)$ pivots in all, and hence the sorting of the 
   accumulated local pivots would be $O(p^2\log{p})$.
+
   \item Selection \& Broadcasting of Global Pivots: There is no
   computational cost at this stage.
+
   \end{enumerate}
+
 \item Local Bucketing: Each process tries to insert the $p-1$ 
 global pivots it received from the master into the sorted set of 
 $\frac{n}{p}$ keys that it already has, using Binary Search. 
 This costs $O(p\log{\frac{n}{p}})$.
+
 \item Distribute Local Buckets: Each process sends $p-1$ of its
-buckets to other processes. Therefore, the total complexity is
-$O(p^2)$.
-\item Local Sort: Each process has about $\frac{n}{p}$ keys
-with itself, and sorting them locally takes 
-$O(\frac{n}{p}\log{\frac{n}{p}})$ time. 
-\item Final Collection: Final merging of the buckets is $O(n)$.
+  buckets to other processes. There is no computation cost for this
+  stage. Therefore, the total complexity is for this stage is $O(1)$.
+
+\item Local Sort: Each process has (in the worst case) $\frac{n}{p} +
+  \frac{n}{q} = O(\frac{n}{p})$ keys with itself, and sorting them
+  locally takes $O(\frac{n}{p}\log{\frac{n}{p}})$ time.
+
+\item Final Collection: Final merging of the buckets consists of
+  communication and the computation cost is $O(1)$.
+
 \end{enumerate}
 Therefore, the total computation cost is: 
-$t_{comp} = O\left(p + \dfrac{n}{p}\log{\dfrac{n}{p}} + 
-p^2\log{p} + p\log{\dfrac{n}{p}} + n\right)$.
+$t_{comp} = O\left(\dfrac{n}{p}\log{\dfrac{n}{p}} + p + p^2\log{p} + p\log{\dfrac{n}{p}} + 1\right)$.
 
 The total cost $T_P = t_{comm} + t_{comp}$. 
-$\Rightarrow T_P = O(n + p^2)$ +  
-$ O\left(p + \dfrac{n}{p}\log{\dfrac{n}{p}} + 
-p^2\log{p} + p\log{\dfrac{n}{p}} + n\right)$ 
+$\Rightarrow T_P = O(n + \dfrac{n}{p}\log{\dfrac{n}{p}} + p^2\log{p} + p\log{\dfrac{n}{p}} + 1)$
+
 \subsection{Value of $k$ that gives best running time is: 4}
 
 The value of $k$ that gives us the best running time is $4$.
+
+\clearpage
 
 \subsection{Report Running Times}
 
